@@ -25,16 +25,10 @@
 
             <p class="mb-0">
               {% if entry.type_note %}
-                {% set cleaned_note = entry.type_note %}
-                {% if pub_type == "Other Papers" %}
-                  {% set cleaned_note = cleaned_note.replace("Other Papers, ", "").replace("Other Papers", "") %}
-                {% elif pub_type == "Journal Papers" %}
-                  {% set cleaned_note = cleaned_note.replace("Journal Papers, ", "").replace("Journal Papers", "") %}
-                {% endif %}
-                {{ cleaned_note.strip('. ') | safe }}.
+                {{ entry.type_note | safe }}
               {% endif %}
               {% if entry.note %}
-                {{ entry.note.strip('. ') | safe }}.
+                {{ entry.note | safe }}
               {% endif %}
             </p>
           </li>

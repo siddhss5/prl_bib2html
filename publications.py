@@ -103,22 +103,21 @@ def format_type_note(entry) -> str:
     if typ == "phdthesis":
         return f"PhD thesis, {entry.get('school', '')}, {year}"
     elif typ == "mastersthesis":
-        return f"Master’s thesis, {entry.get('school', '')}, {year}"
+        return f"Masters thesis, {entry.get('school', '')}, {year}"
     elif typ == "techreport":
         kind = entry.get("type", "Technical Report")
         num = entry.get("number", "")
         inst = entry.get("institution", "")
-        note = f"<b>{kind}"
+        note = kind
         if num: note += f" {num}"
-        note += f"</b>, {inst}, {year}"
+        note += f", {inst}, {year}"
         return note
     elif typ == "misc":
         arxiv_id = entry.get("eprint")
         if arxiv_id:
-            # url = entry.get("url", "")
             return f'In <em>arXiv:{arxiv_id}</em>. {year}'
     elif typ == "article":
-        journal = re.sub(r"[{}]", "", entry.get("journal", ""))
+        journal = entry.get("journal", "").replace('{', '').replace('}', '')
         vol = entry.get("volume", "")
         num = entry.get("number", "")
         note = f"<em>{journal}</em>"
@@ -128,7 +127,7 @@ def format_type_note(entry) -> str:
         if year: note += f", {year}"
         return note
     elif typ == "inproceedings":
-        conf = re.sub(r"[{}]", "", latex_to_html(entry.get("booktitle", "")))
+        conf = latex_to_html(entry.get("booktitle", "").replace('{', '').replace('}', ''))
         return f"<em>{conf}</em>, {year}" if conf else str(year)
     return str(year)
 
@@ -140,9 +139,15 @@ def format_entry(entry, pub_type) -> Publication:
     authors = parse_authors_field(entry.get("author", ""))
     type_note = format_type_note(entry)
     raw_note = entry.get("note", "").strip()
-    note = latex_to_html(re.sub(r'[{}\.]', '', raw_note)).strip()
+    note = latex_to_html(raw_note.replace('{', '').replace('}', '').rstrip('. ')).strip()
+    url = entry.get("url", "")
+    video_note = ""
+    if any(platform in url for platform in ["youtube.com", "youtu.be", "vimeo.com"]):
+        video_note = f'<a href="{url}">Video</a>'
+        if note:
+            video_note += f". {note}"
+        note = video_note
     if note and note not in type_note:
-        type_note = type_note.rstrip('. ')
         type_note += f".<br><b>{note}</b>"
     pdf = pdf_path(entry["ID"])
     if pdf and not ("arxiv" in arxiv_url.lower()):
