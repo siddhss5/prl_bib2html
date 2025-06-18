@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Publications</h1>
+
+  {# pubs is a dict: {year: {pub_type: [entries]}} #}
+  {% for year, type_groups in pubs | dictsort(reverse=true) %}
+    <h2 class="mt-5">{{ year }}</h2>
+
+    {% for pub_type, entries in type_groups.items() %}
+      <h4 class="mt-4">{{ pub_type }}</h4>
+      <ul class="list-unstyled">
+        {% for entry in entries %}
+          <li class="mb-3">
+            <p class="mb-1">
+              {% if entry.pdf %}
+                <a href="{{ entry.pdf }}"><strong>{{ entry.title | safe }}</strong></a>
+              {% else %}
+                <strong>{{ entry.title | safe }}</strong>
+              {% endif %}
+            </p>
+
+            <p class="mb-1">{{ entry.author | safe }}</p>
+
+            <p class="mb-0">
+              {% if entry.journal %}
+                <em>{{ entry.journal | safe }}</em>.
+              {% elif entry.booktitle %}
+                <em>{{ entry.booktitle | safe }}</em>.
+              {% endif %}
+              {% if entry.type_note %}
+                {% set cleaned_note = entry.type_note %}
+                {% if "Other Papers" in pub_type %}
+                  {% set cleaned_note = cleaned_note.replace("Other Papers, ", "").replace("Other Papers", "") %}
+                {% endif %}
+                {{ cleaned_note | safe }}.
+              {% endif %}
+              {% if entry.note %}
+                {{ entry.note | safe }}.
+              {% endif %}
+            </p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endblock %}
