@@ -69,12 +69,21 @@ def parse_authors_field(raw_author_field: str) -> str:
             cleaned_first = re.sub(r"\(.*?\)", "", name['first']).strip()
             initials = ' '.join([part[0] + '.' for part in cleaned_first.split() if part])
         return f"{initials} {last}{sup}".strip()
+    LATEX_ACCENTS = {
+        "\\'e": "é", "\\'a": "á", "\\'i": "í", "\\'o": "ó", "\\'u": "ú",
+        '\\"u': "ü", '\\"a': "ä", '\\"o': "ö"
+    }
     def normalize_name(name):
-        if isinstance(name, dict): return name
-        if isinstance(name, str) and ',' in name:
-            last, first = [s.strip() for s in name.split(',', 1)]
-            return {'first': first, 'last': last}
-        return {'first': name, 'last': ''}
+        if isinstance(name, dict):
+            return name
+        if isinstance(name, str):
+            for latex, uni in LATEX_ACCENTS.items():
+                name = name.replace(latex, uni)
+            if ',' in name:
+                last, first = [s.strip() for s in name.split(',', 1)]
+                return {'first': first, 'last': last}
+            return {'first': name, 'last': ''}
+        return {'first': '', 'last': ''}
     authors = [abbrev(normalize_name(n)) for n in name_list]
     if len(authors) <= 2:
         return ' and '.join(authors)
