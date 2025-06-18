@@ -21,23 +21,20 @@
               {% endif %}
             </p>
 
-            <p class="mb-1">{{ entry.author | safe }}</p>
+            <p class="mb-1">{{ entry.authors | safe }}</p>
 
             <p class="mb-0">
-              {% if entry.journal %}
-                <em>{{ entry.journal | safe }}</em>.
-              {% elif entry.booktitle %}
-                <em>{{ entry.booktitle | safe }}</em>.
-              {% endif %}
               {% if entry.type_note %}
                 {% set cleaned_note = entry.type_note %}
-                {% if "Other Papers" in pub_type %}
+                {% if pub_type == "Other Papers" %}
                   {% set cleaned_note = cleaned_note.replace("Other Papers, ", "").replace("Other Papers", "") %}
+                {% elif pub_type == "Journal Papers" %}
+                  {% set cleaned_note = cleaned_note.replace("Journal Papers, ", "").replace("Journal Papers", "") %}
                 {% endif %}
-                {{ cleaned_note | safe }}.
+                {{ cleaned_note.strip('. ') | safe }}.
               {% endif %}
               {% if entry.note %}
-                {{ entry.note | safe }}.
+                {{ entry.note.strip('. ') | safe }}.
               {% endif %}
             </p>
           </li>
