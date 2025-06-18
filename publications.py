@@ -141,6 +141,16 @@ def list_publications():
                     report_info += f" {report_number}"
                 report_info += f"</b>, {institution}, {year}"
                 entry["type_note"] = report_info
+            elif entry["ENTRYTYPE"] == "misc":
+                arxiv_id = entry.get("eprint")
+                arxiv_url = entry.get("url")
+                if arxiv_id:
+                    arxiv_info = f'<em>arXiv:{arxiv_id}</em>'
+                    entry["type_note"] = f"In {arxiv_info}. {entry.get('year', '')}"
+                    if arxiv_url and "title" in entry:
+                        entry["title"] = f'<a href="{arxiv_url}">{entry["title"]}</a>'
+                else:
+                    entry["type_note"] = ""
             else:
                 entry["type_note"] = ""
             for k in entry:
