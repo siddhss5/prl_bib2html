@@ -44,7 +44,8 @@ class Publication:
     year: int
     title: str
     authors: str
-    type_note: str
+    venue: str
+    note: str
     pdf_url: Optional[str]
 
 def latex_to_html(text: str) -> str:
@@ -156,7 +157,7 @@ def format_title(entry) -> str:
     title = latex_to_html(entry.get("title", ""))
     return title
 
-def format_note(entry, type_note: str) -> str:
+def format_note(entry) -> str:
     raw_note = entry.get("note", "").strip()
     note = latex_to_html(raw_note.replace('{', '').replace('}', '').rstrip('. ')).strip()
     url = entry.get("url", "")
@@ -166,13 +167,11 @@ def format_note(entry, type_note: str) -> str:
         if note:
             video_note += f". {note}"
         note = video_note
-    if note and note not in type_note:
-        type_note += f".<br><b>{note}</b>"
-    return type_note
+    return note
 
 def format_entry(entry, pub_type) -> Publication:
-    type_note = format_venue(entry)
-    type_note = format_note(entry, type_note)
+    venue = format_venue(entry)
+    note = format_note(entry)
     pdf = pdf_path(entry["ID"])
     return Publication(
         id=entry["ID"],
@@ -180,7 +179,8 @@ def format_entry(entry, pub_type) -> Publication:
         year=int(entry.get("year", 0)),
         title=format_title(entry),
         authors=format_authors(entry.get("author", "")),
-        type_note=type_note,
+        venue=venue,
+        note=note,
         pdf_url=pdf
     )
 

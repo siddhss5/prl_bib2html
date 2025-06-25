@@ -14,8 +14,8 @@
         {% for entry in entries %}
           <li class="mb-3">
             <p class="mb-1">
-              {% if entry.pdf %}
-                <a href="{{ entry.pdf }}"><strong>{{ entry.title | safe }}</strong></a>
+              {% if entry.pdf_url %}
+                <a href="{{ entry.pdf_url }}"><strong>{{ entry.title | safe }}</strong></a>
               {% else %}
                 <strong>{{ entry.title | safe }}</strong>
               {% endif %}
@@ -24,11 +24,11 @@
             <p class="mb-1">{{ entry.authors | safe }}</p>
 
             <p class="mb-0">
-              {% if entry.type_note %}
-                {{ entry.type_note | safe }}
+              {% if entry.venue %}
+                {{ entry.venue | safe }}
               {% endif %}
               {% if entry.note %}
-                {{ entry.note | safe }}
+                <br><b>{{ entry.note | safe }}</b>
               {% endif %}
             </p>
           </li>
