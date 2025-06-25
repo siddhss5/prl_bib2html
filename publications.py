@@ -10,6 +10,22 @@ import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import author as parse_author
 
+LATEX_ACCENTS = {
+    "\\'e": "é", "\\'E": "É",
+    "\\'a": "á", "\\'A": "Á",
+    "\\'i": "í", "\\'I": "Í",
+    "\\'o": "ó", "\\'O": "Ó",
+    "\\'u": "ú", "\\'U": "Ú",
+    '\\"u': "ü", '\\"U': "Ü",
+    '\\"a': "ä", '\\"A': "Ä",
+    '\\"o': "ö", '\\"O': "Ö"
+}
+
+def replace_latex_accents(text: str) -> str:
+    for latex, uni in LATEX_ACCENTS.items():
+        text = text.replace(latex, uni)
+    return text
+
 PRL_PUBS = os.environ.get(
     "PRL_PUBS",
     "/cse/web/research/personalroboticslab/personalrobotics/publications/"
@@ -51,7 +67,7 @@ def latex_to_html(text: str) -> str:
         return f'<span class="math">\\({math}\\)</span>'
     return re.sub(r'__MATH(\d+)__', restore_math, text)
 
-def parse_authors_field(raw_author_field: str) -> str:
+def format_authors(raw_author_field: str) -> str:
     try:
         name_list = parse_author({'author': raw_author_field})['author']
     except Exception:
@@ -69,16 +85,11 @@ def parse_authors_field(raw_author_field: str) -> str:
             cleaned_first = re.sub(r"\(.*?\)", "", name['first']).strip()
             initials = ' '.join([part[0] + '.' for part in cleaned_first.split() if part])
         return f"{initials} {last}{sup}".strip()
-    LATEX_ACCENTS = {
-        "\\'e": "é", "\\'a": "á", "\\'i": "í", "\\'o": "ó", "\\'u": "ú",
-        '\\"u': "ü", '\\"a': "ä", '\\"o': "ö"
-    }
     def normalize_name(name):
         if isinstance(name, dict):
             return name
         if isinstance(name, str):
-            for latex, uni in LATEX_ACCENTS.items():
-                name = name.replace(latex, uni)
+            name = replace_latex_accents(name)
             if ',' in name:
                 last, first = [s.strip() for s in name.split(',', 1)]
                 return {'first': first, 'last': last}
@@ -106,7 +117,7 @@ def pdf_path(entry_key: str) -> Optional[str]:
     path = Path(PRL_PUBS) / f"{entry_key}.pdf"
     return f"/publications/{entry_key}.pdf" if path.exists() else None
 
-def format_type_note(entry) -> str:
+def format_venue(entry) -> str:
     typ = entry.get("ENTRYTYPE")
     year = entry.get("year", "")
     if typ == "phdthesis":
@@ -124,7 +135,7 @@ def format_type_note(entry) -> str:
     elif typ == "misc":
         arxiv_id = entry.get("eprint")
         if arxiv_id:
-            return f'In <em>arXiv:{arxiv_id}</em>. {year}'
+            return f'In <em>arXiv:{arxiv_id}</em>, {year}'
     elif typ == "article":
         journal = entry.get("journal", "").replace('{', '').replace('}', '')
         vol = entry.get("volume", "")
@@ -140,13 +151,12 @@ def format_type_note(entry) -> str:
         return f"<em>{conf}</em>, {year}" if conf else str(year)
     return str(year)
 
-def format_entry(entry, pub_type) -> Publication:
+def format_title(entry) -> str:
+    entry["title"] = replace_latex_accents(entry.get("title", ""))
     title = latex_to_html(entry.get("title", ""))
-    arxiv_url = entry.get("url", "")
-    if entry.get("ENTRYTYPE") == "misc" and "arxiv" in arxiv_url.lower():
-        title = f'<a href="{arxiv_url}">{title}</a>'
-    authors = parse_authors_field(entry.get("author", ""))
-    type_note = format_type_note(entry)
+    return title
+
+def format_note(entry, type_note: str) -> str:
     raw_note = entry.get("note", "").strip()
     note = latex_to_html(raw_note.replace('{', '').replace('}', '').rstrip('. ')).strip()
     url = entry.get("url", "")
@@ -158,16 +168,18 @@ def format_entry(entry, pub_type) -> Publication:
         note = video_note
     if note and note not in type_note:
         type_note += f".<br><b>{note}</b>"
+    return type_note
+
+def format_entry(entry, pub_type) -> Publication:
+    type_note = format_venue(entry)
+    type_note = format_note(entry, type_note)
     pdf = pdf_path(entry["ID"])
-    if pdf and not ("arxiv" in arxiv_url.lower()):
-        title = re.sub(r'<a .*?>(.*?)</a>', r'\1', title)
-        title = f'<a href="{pdf}">{title}</a>'
     return Publication(
         id=entry["ID"],
         entry_type=pub_type,
         year=int(entry.get("year", 0)),
-        title=title,
-        authors=authors,
+        title=format_title(entry),
+        authors=format_authors(entry.get("author", "")),
         type_note=type_note,
         pdf_url=pdf
     )
