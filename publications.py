@@ -26,11 +26,6 @@ def replace_latex_accents(text: str) -> str:
         text = text.replace(latex, uni)
     return text
 
-PRL_PUBS = os.environ.get(
-    "PRL_PUBS",
-    "/cse/web/research/personalroboticslab/personalrobotics/publications/"
-)
-
 BIB_FILES = [
     ("siddpubs-journal.bib", "Journal Papers"),
     ("siddpubs-conf.bib", "Conference Papers"),
@@ -102,21 +97,21 @@ def format_authors(raw_author_field: str) -> str:
     return ', '.join(authors[:-1]) + ', and ' + authors[-1]
 
 def fetch_bibtex(name: str):
-    url = f"https://raw.githubusercontent.com/personalrobotics/pubs/master/{name}"
-    cache_path = f"data/pubs/{name}"
-    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-    if not os.path.exists(cache_path):
-        response = requests.get(url)
+    bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/master/{name}"
+    bib_path = f"data/bib/{name}"
+    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
+    if not os.path.exists(bib_path):
+        response = requests.get(bib_url)
         response.raise_for_status()
-        with open(cache_path, 'w', encoding='utf-8') as f:
+        with open(bib_path, 'w', encoding='utf-8') as f:
             f.write(response.text)
-    with open(cache_path, 'r', encoding='utf-8') as f:
+    with open(bib_path, 'r', encoding='utf-8') as f:
         parser = BibTexParser(common_strings=True)
         return bibtexparser.load(f, parser)
 
-def pdf_path(entry_key: str) -> Optional[str]:
-    path = Path(PRL_PUBS) / f"{entry_key}.pdf"
-    return f"/publications/{entry_key}.pdf" if path.exists() else None
+def pdf_path(name: str) -> Optional[str]:
+    pdf_path = f"data/pdf/{name}.pdf"
+    return pdf_path if Path(pdf_path).exists() else None
 
 def format_venue(entry) -> str:
     typ = entry.get("ENTRYTYPE")
@@ -170,18 +165,15 @@ def format_note(entry) -> str:
     return note
 
 def format_entry(entry, pub_type) -> Publication:
-    venue = format_venue(entry)
-    note = format_note(entry)
-    pdf = pdf_path(entry["ID"])
     return Publication(
         id=entry["ID"],
         entry_type=pub_type,
         year=int(entry.get("year", 0)),
         title=format_title(entry),
         authors=format_authors(entry.get("author", "")),
-        venue=venue,
-        note=note,
-        pdf_url=pdf
+        venue=format_venue(entry),
+        note=format_note(entry),
+        pdf_url=pdf_path(entry["ID"])
     )
 
 def list_publications() -> dict:
