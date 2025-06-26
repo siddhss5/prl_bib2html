@@ -32,6 +32,21 @@ BIB_FILES = [
     ("siddpubs-misc.bib", "Other Papers"),
 ]
 
+def fetch_bibtex(name: str):
+    # bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/master/{name}"
+    bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug/{name}"
+    bib_path = f"data/bib/{name}"
+    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
+    if not os.path.exists(bib_path):
+        response = requests.get(bib_url)
+        response.raise_for_status()
+        with open(bib_path, 'w', encoding='utf-8') as f:
+            f.write(response.text)
+    with open(bib_path, 'r', encoding='utf-8') as f:
+        parser = BibTexParser(common_strings=True)
+        return bibtexparser.load(f, parser)
+
+
 @dataclass
 class Publication:
     entry_type: str
@@ -45,8 +60,6 @@ class Publication:
 def latex_to_html(text: str) -> str:
     if not isinstance(text, str):
         return text
-    # Remove curly braces first
-    text = text.replace('{', '').replace('}', '')
     math_blocks = []
     def protect_math(m):
         math_blocks.append(m.group(1))
@@ -55,9 +68,13 @@ def latex_to_html(text: str) -> str:
     text = re.sub(r'\\textbf\{(.*?)\}', r'<b>\1</b>', text)
     text = re.sub(r'\\textbf\s*', '', text)
     text = re.sub(r'\\emph\{(.*?)\}', r'<em>\1</em>', text)
+    # Handle \href{url}{text} and \href{url} cases
     text = re.sub(r'\\href\{(.*?)\}\{(.*?)\}', r'<a href="\1">\2</a>', text)
+    text = re.sub(r'\\href\{(.*?)\}', r'<a href="\1">\1</a>', text)
     text = re.sub(r'\^\{(.*?)\}', r'<sup>\1</sup>', text)
     text = re.sub(r'_\{(.*?)\}', r'<sub>\1</sub>', text)
+    # Remove remaining curly braces after LaTeX processing
+    text = text.replace('{', '').replace('}', '')
     def restore_math(m):
         math = math_blocks[int(m.group(1))]
         return f'<span class="math">\\({math}\\)</span>'
@@ -95,19 +112,6 @@ def format_authors(raw_author_field: str) -> str:
     if len(authors) <= 2:
         return ' and '.join(authors)
     return ', '.join(authors[:-1]) + ', and ' + authors[-1]
-
-def fetch_bibtex(name: str):
-    bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/master/{name}"
-    bib_path = f"data/bib/{name}"
-    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
-    if not os.path.exists(bib_path):
-        response = requests.get(bib_url)
-        response.raise_for_status()
-        with open(bib_path, 'w', encoding='utf-8') as f:
-            f.write(response.text)
-    with open(bib_path, 'r', encoding='utf-8') as f:
-        parser = BibTexParser(common_strings=True)
-        return bibtexparser.load(f, parser)
 
 def format_pdf_url(name: str) -> Optional[str]:
     pdf_path = f"data/pdf/{name}.pdf"
