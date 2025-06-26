@@ -1,10 +1,22 @@
 [project]
-name = "prl-pubsite"
+name = "prl-bib2html"
 version = "0.1.0"
-description = "Simplified PRL publications website using Flask and bibtexparser"
+description = "Python library for converting BibTeX files to HTML for academic publications websites"
 requires-python = ">=3.8"
 dependencies = [
-    "Flask",
     "bibtexparser",
     "requests"
 ]
+
+[project.optional-dependencies]
+demo = [
+    "Flask"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["prl_bib2html*"]

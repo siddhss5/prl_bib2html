@@ -1,8 +1,8 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from prl_bib2html import PublicationsConfig, list_publications
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 # PRL-specific configuration
 PRL_CONFIG = PublicationsConfig(
@@ -21,7 +21,7 @@ PRL_CONFIG = PublicationsConfig(
 
 @app.route("/")
 def index():
-    return "<h2>Welcome to the PRL Website</h2><p><a href='/publications'>View Publications</a></p>"
+    return redirect(url_for('publications'))
 
 @app.route("/publications")
 def publications():
