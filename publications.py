@@ -34,7 +34,6 @@ BIB_FILES = [
 
 @dataclass
 class Publication:
-    id: str
     entry_type: str
     year: int
     title: str
@@ -46,6 +45,8 @@ class Publication:
 def latex_to_html(text: str) -> str:
     if not isinstance(text, str):
         return text
+    # Remove curly braces first
+    text = text.replace('{', '').replace('}', '')
     math_blocks = []
     def protect_math(m):
         math_blocks.append(m.group(1))
@@ -57,7 +58,6 @@ def latex_to_html(text: str) -> str:
     text = re.sub(r'\\href\{(.*?)\}\{(.*?)\}', r'<a href="\1">\2</a>', text)
     text = re.sub(r'\^\{(.*?)\}', r'<sup>\1</sup>', text)
     text = re.sub(r'_\{(.*?)\}', r'<sub>\1</sub>', text)
-    text = text.replace('{', '').replace('}', '')
     def restore_math(m):
         math = math_blocks[int(m.group(1))]
         return f'<span class="math">\\({math}\\)</span>'
@@ -109,7 +109,7 @@ def fetch_bibtex(name: str):
         parser = BibTexParser(common_strings=True)
         return bibtexparser.load(f, parser)
 
-def pdf_path(name: str) -> Optional[str]:
+def format_pdf_url(name: str) -> Optional[str]:
     pdf_path = f"data/pdf/{name}.pdf"
     return pdf_path if Path(pdf_path).exists() else None
 
@@ -147,33 +147,30 @@ def format_venue(entry) -> str:
         return f"<em>{conf}</em>, {year}" if conf else str(year)
     return str(year)
 
-def format_title(entry) -> str:
-    entry["title"] = replace_latex_accents(entry.get("title", ""))
-    title = latex_to_html(entry.get("title", ""))
+def format_title(title: str) -> str:
+    title = replace_latex_accents(title)
+    title = latex_to_html(title)
     return title
 
 def format_note(entry) -> str:
-    raw_note = entry.get("note", "").strip()
-    note = latex_to_html(raw_note.replace('{', '').replace('}', '').rstrip('. ')).strip()
+    note = latex_to_html(entry.get("note", "").strip().rstrip('. '))
     url = entry.get("url", "")
-    video_note = ""
-    if any(platform in url for platform in ["youtube.com", "youtu.be", "vimeo.com"]):
-        video_note = f'<a href="{url}">Video</a>'
-        if note:
-            video_note += f". {note}"
-        note = video_note
+    if url: 
+        if any(platform in url for platform in ["youtube.com", "youtu.be", "vimeo.com"]):
+            return f'<a href="{url}">Video</a>{". " + note}'   
+        else:
+            return f'<a href="{url}">URL</a>{". " + note}'
     return note
 
 def format_entry(entry, pub_type) -> Publication:
     return Publication(
-        id=entry["ID"],
         entry_type=pub_type,
         year=int(entry.get("year", 0)),
-        title=format_title(entry),
+        title=format_title(entry.get("title", "")),
         authors=format_authors(entry.get("author", "")),
         venue=format_venue(entry),
         note=format_note(entry),
-        pdf_url=pdf_path(entry["ID"])
+        pdf_url=format_pdf_url(entry["ID"])
     )
 
 def list_publications() -> dict:
