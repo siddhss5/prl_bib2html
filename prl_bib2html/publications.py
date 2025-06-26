@@ -28,6 +28,17 @@ def replace_latex_accents(text: str) -> str:
 
 @dataclass
 class PublicationsConfig:
+    """
+    Configuration for publications processing.
+    
+    Attributes:
+        bibtex_base_url: Base URL for fetching BibTeX files
+        bibtex_cache_dir: Local directory for caching BibTeX files
+        pdf_base_dir: Base directory/URL for PDF files. Can be either:
+                     - Local path (e.g., "data/pdf") - will check if files exist
+                     - URL (e.g., "https://example.com/pdfs") - will construct URLs directly
+        bib_files: List of (filename, display_name) tuples for BibTeX files
+    """
     bibtex_base_url: str
     bibtex_cache_dir: str
     pdf_base_dir: str
@@ -114,7 +125,15 @@ def fetch_bibtex(name: str, config: PublicationsConfig):
 
 def format_pdf_url(name: str, config: PublicationsConfig) -> Optional[str]:
     pdf_path = f"{config.pdf_base_dir}/{name}.pdf"
-    return pdf_path if Path(pdf_path).exists() else None
+    
+    # Check if pdf_base_dir is a URL (starts with http:// or https://)
+    if config.pdf_base_dir.startswith(('http://', 'https://')):
+        # For URLs, return the constructed URL directly
+        # Note: We don't check if the URL exists as that would require HTTP requests
+        return pdf_path
+    else:
+        # For local paths, check if file exists
+        return pdf_path if Path(pdf_path).exists() else None
 
 def format_venue(entry) -> str:
     typ = entry.get("ENTRYTYPE")
