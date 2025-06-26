@@ -1,5 +1,0 @@
-bibtexparser
-requests
-
-[demo]
-Flask

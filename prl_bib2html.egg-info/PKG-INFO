@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: prl-bib2html
-Version: 0.1.0
-Summary: Python library for converting BibTeX files to HTML for academic publications websites
-Requires-Python: >=3.8
-Requires-Dist: bibtexparser
-Requires-Dist: requests
-Provides-Extra: demo
-Requires-Dist: Flask; extra == "demo"

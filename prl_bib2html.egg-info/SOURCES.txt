@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-prl_bib2html/__init__.py
-prl_bib2html/publications.py
-prl_bib2html.egg-info/PKG-INFO
-prl_bib2html.egg-info/SOURCES.txt
-prl_bib2html.egg-info/dependency_links.txt
-prl_bib2html.egg-info/requires.txt
-prl_bib2html.egg-info/top_level.txt
