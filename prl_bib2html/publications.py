@@ -26,26 +26,12 @@ def replace_latex_accents(text: str) -> str:
         text = text.replace(latex, uni)
     return text
 
-BIB_FILES = [
-    ("siddpubs-journal.bib", "Journal Papers"),
-    ("siddpubs-conf.bib", "Conference Papers"),
-    ("siddpubs-misc.bib", "Other Papers"),
-]
-
-def fetch_bibtex(name: str):
-    # bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/master/{name}"
-    bib_url = f"https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug/{name}"
-    bib_path = f"data/bib/{name}"
-    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
-    if not os.path.exists(bib_path):
-        response = requests.get(bib_url)
-        response.raise_for_status()
-        with open(bib_path, 'w', encoding='utf-8') as f:
-            f.write(response.text)
-    with open(bib_path, 'r', encoding='utf-8') as f:
-        parser = BibTexParser(common_strings=True)
-        return bibtexparser.load(f, parser)
-
+@dataclass
+class PublicationsConfig:
+    bibtex_base_url: str
+    bibtex_cache_dir: str
+    pdf_base_dir: str
+    bib_files: List[tuple]
 
 @dataclass
 class Publication:
@@ -113,8 +99,21 @@ def format_authors(raw_author_field: str) -> str:
         return ' and '.join(authors)
     return ', '.join(authors[:-1]) + ', and ' + authors[-1]
 
-def format_pdf_url(name: str) -> Optional[str]:
-    pdf_path = f"data/pdf/{name}.pdf"
+def fetch_bibtex(name: str, config: PublicationsConfig):
+    bib_url = f"{config.bibtex_base_url}/{name}"
+    bib_path = f"{config.bibtex_cache_dir}/{name}"
+    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
+    if not os.path.exists(bib_path):
+        response = requests.get(bib_url)
+        response.raise_for_status()
+        with open(bib_path, 'w', encoding='utf-8') as f:
+            f.write(response.text)
+    with open(bib_path, 'r', encoding='utf-8') as f:
+        parser = BibTexParser(common_strings=True)
+        return bibtexparser.load(f, parser)
+
+def format_pdf_url(name: str, config: PublicationsConfig) -> Optional[str]:
+    pdf_path = f"{config.pdf_base_dir}/{name}.pdf"
     return pdf_path if Path(pdf_path).exists() else None
 
 def format_venue(entry) -> str:
@@ -166,7 +165,7 @@ def format_note(entry) -> str:
             return f'<a href="{url}">URL</a>{". " + note}'
     return note
 
-def format_entry(entry, pub_type) -> Publication:
+def format_entry(entry, pub_type: str, config: PublicationsConfig) -> Publication:
     return Publication(
         entry_type=pub_type,
         year=int(entry.get("year", 0)),
@@ -174,26 +173,17 @@ def format_entry(entry, pub_type) -> Publication:
         authors=format_authors(entry.get("author", "")),
         venue=format_venue(entry),
         note=format_note(entry),
-        pdf_url=format_pdf_url(entry["ID"])
+        pdf_url=format_pdf_url(entry["ID"], config)
     )
 
-def list_publications() -> dict:
+def list_publications(config: PublicationsConfig) -> dict:
     all_entries = []
-    for fname, pub_type in BIB_FILES:
-        bib = fetch_bibtex(fname)
+    for fname, pub_type in config.bib_files:
+        bib = fetch_bibtex(fname, config)
         for entry in bib.entries:
-            all_entries.append(format_entry(entry, pub_type))
+            all_entries.append(format_entry(entry, pub_type, config))
     all_entries.sort(key=lambda e: e.year, reverse=True)
     grouped = defaultdict(lambda: defaultdict(list))
     for e in all_entries:
         grouped[e.year][e.entry_type].append(e)
     return grouped
-
-if __name__ == "__main__":
-    pubs = list_publications()
-    for year in sorted(pubs.keys(), reverse=True):
-        print(f"\n==== {year} ====")
-        for typ, entries in pubs[year].items():
-            print(f"\n-- {typ} --")
-            for e in entries:
-                print(f"* {e.authors} — {e.title}")
