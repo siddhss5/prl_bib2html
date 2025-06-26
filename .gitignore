@@ -6,3 +6,5 @@ env/
 *.bib
 *.pdf
 data/pubs/
+*.egg-info/
+uv.lock
