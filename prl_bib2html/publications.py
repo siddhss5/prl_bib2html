@@ -1,3 +1,14 @@
+"""
+BibTeX to HTML conversion utilities.
+
+This module provides functions for parsing BibTeX files and converting them
+to HTML format for academic publications websites.
+
+Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
+Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
+MIT License - see LICENSE file for details.
+"""
+
 import os
 import re
 import requests

@@ -1,3 +1,14 @@
+"""
+Flask web application demo for prl_bib2html.
+
+This demo shows how to use the prl_bib2html library in a Flask web application
+to display publications on a website.
+
+Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
+Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
+MIT License - see LICENSE file for details.
+"""
+
 import os
 from flask import Flask, render_template, redirect, url_for
 from prl_bib2html import PublicationsConfig, list_publications

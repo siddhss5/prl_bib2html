@@ -4,6 +4,10 @@ Standalone HTML generator for PRL publications.
 
 This script demonstrates how to use the prl_bib2html library
 to generate a complete HTML publications page without any web framework.
+
+Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
+Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
+MIT License - see LICENSE file for details.
 """
 
 import os

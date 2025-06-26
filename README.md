@@ -17,29 +17,55 @@ A Python library for converting BibTeX files to HTML for academic publications w
 - **🔗 URL Support**: Handle publication URLs, video links, and external resources
 - **⚡ Framework Agnostic**: Use with any web framework or standalone
 
+## Prerequisites
+
+- Python 3.8+
+- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+
 ## Installation
 
-### Core Library
+### Development Installation (Recommended)
+
+Since this package is not yet published to PyPI, you need to install it from the local repository:
 
 ```bash
-# Install the core library
-uv pip install prl-bib2html
-```
-
-### With Demo Support (includes Flask)
-
-```bash
-# Install with Flask for running demos
-uv pip install "prl-bib2html[demo]"
-```
-
-### Development Installation
-
-```bash
-# Clone and install in development mode
+# Clone the repository
 git clone https://github.com/personalrobotics/prl_bib2html.git
 cd prl_bib2html
+
+# Create and activate virtual environment (uv handles this automatically)
+uv venv
+
+# Install in development mode with demo support
 uv pip install -e ".[demo]"
+```
+
+**Note**: `uv` automatically creates and manages virtual environments. If you're using `pip`, you'll need to create a virtual environment manually:
+
+```bash
+# Alternative: Using pip with manual venv
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\\Scripts\\activate
+pip install -e ".[demo]"
+```
+
+### Core Library Only
+
+```bash
+# Install just the core library (no Flask)
+uv pip install -e .
+```
+
+### Future PyPI Installation
+
+Once the package is published to PyPI, you'll be able to install it directly:
+
+```bash
+# Core library
+uv pip install prl-bib2html
+
+# With demo support
+uv pip install "prl-bib2html[demo]"
 ```
 
 ## Quick Start
@@ -234,8 +260,6 @@ prl_bib2html/
 
 ## License
 
-[Add your license information here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-Developed by the Personal Robotics Laboratory at the University of Washington.
+Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
