@@ -1,0 +1,32 @@
+# Projects configuration file
+# 
+# Each project should have:
+#   - title: Display title for the project
+#   - description: Brief description of the project
+#   - website: Project website URL
+#   - status: Project status (active or archived)
+
+# Example project entries:
+# sample-project:
+#   title: "Sample Robotics Project"
+#   description: "A sample robotics project for demonstration purposes"
+#   website: "https://example.com/sample-project"
+#   status: "active"
+
+robotfeeding:
+  title: "Robot-Assisted Feeding"
+  description: "Robot-assisted feeding system for people with mobility impairments"
+  website: "https://robotfeeding.io"
+  status: "active"
+
+offroad:
+  title: "Off-Road Autonomous Driving"
+  description: "Autonomous driving system for off-road environments"
+  website: "https://mushr.io"
+  status: "active"
+
+ccil:
+  title: "Data Augmentation for Imitation Learning"
+  description: "Data augmentation method for corrective imitation learning"
+  website: "https://personalrobotics.github.io/CCIL/"
+  status: "active"

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Projects</h1>
+
+  {% if projects_config %}
+    {% for project_name, project_info in projects_config.items() %}
+      <div class="mt-4 border-bottom pb-3" id="{{ project_name }}">
+        <h3>
+          {{ project_info.title if project_info.title else project_name }}
+          <span class="badge bg-info text-decoration-none ms-2">{{ project_name }}</span>
+          {% if project_info.status %}
+            <span class="badge bg-{{ 'success' if project_info.status == 'active' else 'secondary' }} ms-1">
+              {{ project_info.status | capitalize }}
+            </span>
+          {% endif %}
+          {% if project_info.website %}
+            <a href="{{ project_info.website }}" target="_blank" class="badge bg-primary text-decoration-none ms-1">
+              Website
+            </a>
+          {% endif %}
+        </h3>
+
+        {% if project_info.description %}
+          <p class="mb-2">{{ project_info.description }}</p>
+        {% endif %}
+
+        {% if project_name in project_pubs and project_pubs[project_name] %}
+          <ul class="list-unstyled">
+            {% for pub in project_pubs[project_name] %}
+              <li class="mb-2">
+                {% if pub.pdf_url %}
+                  <a href="{{ pub.pdf_url }}">{{ pub.title | safe }}</a>
+                {% else %}
+                  {{ pub.title | safe }}
+                {% endif %}
+                <br>
+                <small class="text-muted">{{ pub.authors | safe }} — {{ pub.venue | safe }}</small>
+                {% if pub.note %}
+                  <br><small><b>{{ pub.note | safe }}</b></small>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="lead">No projects configured.</p>
+  {% endif %}
+</div>
+{% endblock %}
+

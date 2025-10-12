@@ -5,7 +5,8 @@ description = "Python library for converting BibTeX files to HTML for academic p
 requires-python = ">=3.8"
 dependencies = [
     "bibtexparser",
-    "requests"
+    "requests",
+    "pyyaml"
 ]
 
 [project.optional-dependencies]

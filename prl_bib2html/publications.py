@@ -12,10 +12,11 @@ MIT License - see LICENSE file for details.
 import os
 import re
 import requests
+import yaml
 from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
@@ -49,11 +50,13 @@ class PublicationsConfig:
                      - Local path (e.g., "data/pdf") - will check if files exist
                      - URL (e.g., "https://example.com/pdfs") - will construct URLs directly
         bib_files: List of (filename, display_name) tuples for BibTeX files
+        projects_yaml_path: Optional path to projects YAML file
     """
     bibtex_base_url: str
     bibtex_cache_dir: str
     pdf_base_dir: str
     bib_files: List[tuple]
+    projects_yaml_path: Optional[str] = None
 
 @dataclass
 class Publication:
@@ -64,6 +67,7 @@ class Publication:
     venue: str
     note: str
     pdf_url: Optional[str]
+    projects: List[str]
 
 def latex_to_html(text: str) -> str:
     if not isinstance(text, str):
@@ -195,6 +199,17 @@ def format_note(entry) -> str:
             return f'<a href="{url}">URL</a>{". " + note}'
     return note
 
+def parse_projects(entry) -> List[str]:
+    """Parse project field from BibTeX entry, supporting multiple projects."""
+    project_field = entry.get("project", "").strip()
+    if not project_field:
+        return []
+    
+    # Remove surrounding braces and split by comma
+    project_field = project_field.strip('{}')
+    projects = [p.strip() for p in project_field.split(',') if p.strip()]
+    return projects
+
 def format_entry(entry, pub_type: str, config: PublicationsConfig) -> Publication:
     return Publication(
         entry_type=pub_type,
@@ -203,7 +218,8 @@ def format_entry(entry, pub_type: str, config: PublicationsConfig) -> Publicatio
         authors=format_authors(entry.get("author", "")),
         venue=format_venue(entry),
         note=format_note(entry),
-        pdf_url=format_pdf_url(entry["ID"], config)
+        pdf_url=format_pdf_url(entry["ID"], config),
+        projects=parse_projects(entry)
     )
 
 def list_publications(config: PublicationsConfig) -> dict:
@@ -217,3 +233,43 @@ def list_publications(config: PublicationsConfig) -> dict:
     for e in all_entries:
         grouped[e.year][e.entry_type].append(e)
     return grouped
+
+def load_projects_config(yaml_path: str) -> Dict:
+    """Load projects configuration from YAML file."""
+    if not os.path.exists(yaml_path):
+        return {}
+    
+    with open(yaml_path, 'r', encoding='utf-8') as f:
+        projects = yaml.safe_load(f) or {}
+    
+    return projects
+
+def list_publications_by_project(config: PublicationsConfig, projects_config: Dict) -> Dict[str, List[Publication]]:
+    """
+    Group publications by project.
+    
+    Args:
+        config: Publications configuration
+        projects_config: Dictionary of project metadata from YAML
+    
+    Returns:
+        Dictionary mapping project names to lists of publications
+    """
+    all_entries = []
+    for fname, pub_type in config.bib_files:
+        bib = fetch_bibtex(fname, config)
+        for entry in bib.entries:
+            all_entries.append(format_entry(entry, pub_type, config))
+    
+    # Group by project, filtering to only valid projects
+    project_pubs = defaultdict(list)
+    for pub in all_entries:
+        for project_name in pub.projects:
+            if project_name in projects_config:
+                project_pubs[project_name].append(pub)
+    
+    # Sort publications within each project by year (newest first)
+    for project_name in project_pubs:
+        project_pubs[project_name].sort(key=lambda e: e.year, reverse=True)
+    
+    return dict(project_pubs)

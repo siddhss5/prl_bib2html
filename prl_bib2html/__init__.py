@@ -9,7 +9,17 @@ Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
 MIT License - see LICENSE file for details.
 """
 
-from .publications import PublicationsConfig, list_publications
+from .publications import (
+    PublicationsConfig,
+    list_publications,
+    load_projects_config,
+    list_publications_by_project
+)
 
-__all__ = ["PublicationsConfig", "list_publications"]
+__all__ = [
+    "PublicationsConfig",
+    "list_publications",
+    "load_projects_config",
+    "list_publications_by_project"
+]
 __version__ = "1.0.0" 
