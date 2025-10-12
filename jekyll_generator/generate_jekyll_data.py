@@ -39,7 +39,8 @@ JEKYLL_SITE = Path.home() / "code" / "siddhss5.github.io"
 # PRL configuration
 CONFIG = PublicationsConfig(
     bibtex_base_url="https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug",
-    bibtex_cache_dir=str(PROJECT_ROOT / "data" / "bib"),
+    # Store BibTeX files in Jekyll site's _data directory
+    bibtex_cache_dir=str(JEKYLL_SITE / "_data" / "bib"),
     pdf_base_dir="https://personalrobotics.cs.washington.edu/publications/",
     bib_files=[
         ("siddpubs-journal.bib", "Journal Papers"),

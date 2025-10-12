@@ -23,6 +23,12 @@ This creates:
 - `~/code/siddhss5.github.io/_data/publications.yml`
 - `~/code/siddhss5.github.io/_data/projects.yml`
 
+**Note:** The generator expects your BibTeX files and projects config in your Jekyll site:
+- BibTeX files: `~/code/siddhss5.github.io/_data/bib/`
+- Projects config: `~/code/siddhss5.github.io/_data/projects_config.yaml`
+
+This keeps all personal data in your website repo, not in the prl_bib2html library.
+
 ### 2. Update Jekyll Pages
 
 Copy the template files to your Jekyll site:
@@ -84,12 +90,12 @@ GitHub Pages will automatically rebuild and deploy!
 When you add new publications or update projects:
 
 ```bash
-# 1. Update BibTeX files or projects.yaml in prl_bib2html repo
-cd /Users/siddh/code/prl_bib2html
-# ... make your edits ...
+# 1. Update BibTeX files or projects in your Jekyll site
+cd ~/code/siddhss5.github.io/_data
+# Edit bib/*.bib files or projects_config.yaml
 
 # 2. Regenerate Jekyll data
-cd jekyll_generator
+cd ~/code/prl_bib2html/jekyll_generator
 python generate_jekyll_data.py
 
 # 3. Commit and push Jekyll site
@@ -98,6 +104,9 @@ git add _data/
 git commit -m "Update publications and projects data"
 git push origin minimal-mistakes
 ```
+
+**All personal data lives in your Jekyll site repository**, keeping the prl_bib2html
+library clean and reusable.
 
 ## Generated Data Structure
 
