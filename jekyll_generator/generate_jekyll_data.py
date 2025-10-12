@@ -46,7 +46,8 @@ CONFIG = PublicationsConfig(
         ("siddpubs-conf.bib", "Conference Papers"),
         ("siddpubs-misc.bib", "Other Papers"),
     ],
-    projects_yaml_path=str(PROJECT_ROOT / "data" / "projects.yaml")
+    # Look for projects config in Jekyll site's _data directory
+    projects_yaml_path=str(JEKYLL_SITE / "_data" / "projects_config.yaml")
 )
 
 
