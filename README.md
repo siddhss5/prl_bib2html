@@ -15,6 +15,7 @@ A Python library for converting BibTeX files to HTML for academic publications w
 - **👥 Author Formatting**: Intelligent author name formatting and abbreviation
 - **📅 Year Grouping**: Automatic organization by publication year and type
 - **🔗 URL Support**: Handle publication URLs, video links, and external resources
+- **📁 Project Organization**: Group publications by research projects with YAML-based metadata
 - **⚡ Framework Agnostic**: Use with any web framework or standalone
 
 ## Prerequisites
@@ -82,7 +83,8 @@ config = PublicationsConfig(
         ("journal.bib", "Journal Papers"),
         ("conference.bib", "Conference Papers"),
         ("other.bib", "Other Papers"),
-    ]
+    ],
+    projects_yaml_path="data/projects.yaml"  # Optional: for project organization
 )
 
 # Generate publications data
@@ -90,6 +92,29 @@ publications = list_publications(config)
 
 # publications is now a dict organized by year and category
 # {2024: {"Journal Papers": [Publication, ...], ...}, ...}
+```
+
+### With Project Organization
+
+```python
+from prl_bib2html import (
+    PublicationsConfig,
+    list_publications,
+    load_projects_config,
+    list_publications_by_project
+)
+
+config = PublicationsConfig(
+    # ... configuration as above ...
+    projects_yaml_path="data/projects.yaml"
+)
+
+# Load project metadata
+projects = load_projects_config(config.projects_yaml_path)
+
+# Get publications grouped by project
+project_pubs = list_publications_by_project(config, projects)
+# {project_name: [Publication, ...], ...}
 ```
 
 ## Demos
@@ -109,12 +134,13 @@ uv run python generate_html.py
 
 **Features**:
 - ✅ No web framework required
-- ✅ Complete HTML page with CSS styling
+- ✅ Complete HTML pages with CSS styling
 - ✅ Responsive design
 - ✅ Direct PDF links
 - ✅ Professional academic styling
+- ✅ Project organization support
 
-**Output**: Generates `publications.html` that you can open directly in any browser or host on any static file server.
+**Output**: Generates `publications.html` and `projects.html` that you can open directly in any browser or host on any static file server.
 
 ### 2. Flask Web Application
 
@@ -130,10 +156,13 @@ uv run python app.py
 **Features**:
 - ✅ Full web application with routing
 - ✅ Template-based rendering
+- ✅ Publications and Projects pages
 - ✅ Auto-redirect to publications page
 - ✅ Development server with hot reload
 
-**Access**: http://127.0.0.1:5000
+**Access**: 
+- http://127.0.0.1:5000/publications - Browse all publications
+- http://127.0.0.1:5000/projects - Browse publications by project
 
 ## Configuration
 
@@ -144,10 +173,11 @@ The main configuration class that controls how the library works:
 ```python
 @dataclass
 class PublicationsConfig:
-    bibtex_base_url: str      # Base URL for BibTeX files
-    bibtex_cache_dir: str     # Local cache directory
-    pdf_base_dir: str         # Base directory/URL for PDFs (supports both local paths and URLs)
-    bib_files: List[tuple]    # List of (filename, display_name) tuples
+    bibtex_base_url: str           # Base URL for BibTeX files
+    bibtex_cache_dir: str          # Local cache directory
+    pdf_base_dir: str              # Base directory/URL for PDFs (supports both local paths and URLs)
+    bib_files: List[tuple]         # List of (filename, display_name) tuples
+    projects_yaml_path: Optional[str]  # Optional path to projects YAML file
 ```
 
 ### Environment Variables
@@ -179,6 +209,18 @@ Processes BibTeX files and returns publications organized by year and category.
 
 **Returns**: `{year: {category: [Publication, ...], ...}, ...}`
 
+#### `load_projects_config(yaml_path: str) -> dict`
+
+Load project metadata from a YAML configuration file.
+
+**Returns**: Dictionary mapping project names to project metadata
+
+#### `list_publications_by_project(config: PublicationsConfig, projects_config: dict) -> dict`
+
+Group publications by project, filtering to only valid projects defined in the YAML.
+
+**Returns**: `{project_name: [Publication, ...], ...}`
+
 #### `PublicationsConfig`
 
 Configuration class for the library.
@@ -197,6 +239,7 @@ class Publication:
     venue: str                # Journal/conference name
     note: str                 # Additional notes/links
     pdf_url: Optional[str]    # PDF link if available
+    projects: List[str]       # List of associated project names
 ```
 
 ## Advanced Features
@@ -222,6 +265,42 @@ Author names are intelligently formatted:
 
 BibTeX files are automatically cached locally to improve performance and reduce network requests.
 
+### Project Organization
+
+Organize publications by research projects using BibTeX tags and YAML metadata:
+
+1. **Add project tags to BibTeX entries:**
+   ```bibtex
+   @inproceedings{smith2024,
+     title = {My Paper},
+     author = {Smith, J.},
+     year = {2024},
+     project = {robotics, ml}  # Can specify multiple projects
+   }
+   ```
+
+2. **Create `data/projects.yaml`:**
+   ```yaml
+   robotics:
+     title: "Robotics Research"
+     description: "Advanced robotics systems"
+     website: "https://example.com/robotics"
+     status: "active"
+   
+   ml:
+     title: "Machine Learning"
+     description: "ML for robotics"
+     website: "https://example.com/ml"
+     status: "archived"
+   ```
+
+3. **Projects are automatically:**
+   - Displayed on dedicated `/projects` page
+   - Shown as badges on publications page
+   - Sorted by status (active first), newest publication, then alphabetically
+
+For detailed documentation, see [PROJECTS_FEATURE.md](PROJECTS_FEATURE.md).
+
 ## Project Structure
 
 ```
@@ -246,6 +325,7 @@ prl_bib2html/
 ### Core Dependencies
 - `bibtexparser` - BibTeX parsing
 - `requests` - HTTP requests for remote files
+- `pyyaml` - YAML parsing for project metadata
 
 ### Optional Dependencies
 - `Flask` - Web framework (for Flask demo)
