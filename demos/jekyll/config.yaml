@@ -2,7 +2,7 @@
 # This demonstrates generating Jekyll-compatible YAML data files
 
 bibtex:
-  source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug"
+  source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/master"
   # For Jekyll, store BibTeX in the Jekyll site's _data directory
   cache_dir: "~/code/siddhss5.github.io/_data/bib"
   files:
