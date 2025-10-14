@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Jekyll Data Generator for goodrobot.ai
+Jekyll Data Generator Demo
 
-This script generates Jekyll-compatible YAML data files from BibTeX sources
-for use with Minimal Mistakes theme on GitHub Pages.
+This script demonstrates generating Jekyll-compatible YAML data files from BibTeX sources
+for use with static site generators like Jekyll with Minimal Mistakes theme.
 
 Usage:
     python generate_jekyll_data.py
 
 Outputs:
-    - <jekyll_site>/_data/publications.yml
-    - <jekyll_site>/_data/projects.yml
+    - publications.yml (in current directory)
+    - projects.yml (in current directory)
+
+These files can then be copied to your Jekyll site's _data/ directory.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
 Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
@@ -35,13 +37,13 @@ from prl_bib2html import (
     export_to_yaml
 )
 
-# Configuration
-JEKYLL_SITE = Path.home() / "code" / "siddhss5.github.io"
-
 # Load configuration from YAML file
 config_path = Path(__file__).parent / "config.yaml"
 lib_config = LibraryConfig.from_yaml(str(config_path))
 CONFIG = lib_config.to_publications_config()
+
+# Output to current directory
+OUTPUT_DIR = Path(__file__).parent
 
 
 def generate_publications_yaml():
@@ -54,8 +56,8 @@ def generate_publications_yaml():
     # Convert to dict using library function
     yaml_data = publications_to_dict(pubs)
     
-    # Write to Jekyll _data directory
-    output_file = JEKYLL_SITE / "_data" / "publications.yml"
+    # Write to current directory
+    output_file = OUTPUT_DIR / "publications.yml"
     export_to_yaml(yaml_data, str(output_file))
     
     total_pubs = sum(len(pubs) for year in yaml_data.values() for pubs in year.values())
@@ -96,8 +98,8 @@ def generate_projects_yaml():
     # Convert to dict using library function
     yaml_data = projects_to_dict(sorted_projects, project_pubs)
     
-    # Write to Jekyll _data directory
-    output_file = JEKYLL_SITE / "_data" / "projects.yml"
+    # Write to current directory
+    output_file = OUTPUT_DIR / "projects.yml"
     export_to_yaml(yaml_data, str(output_file))
     
     total_project_pubs = sum(len(p['publications']) for p in yaml_data.values())
@@ -110,16 +112,10 @@ def generate_projects_yaml():
 def main():
     """Generate all Jekyll data files."""
     print("=" * 60)
-    print("Jekyll Data Generator for goodrobot.ai")
+    print("Jekyll Data Generator Demo")
     print("=" * 60)
     
-    # Check if Jekyll site exists
-    if not JEKYLL_SITE.exists():
-        print(f"❌ Jekyll site not found at: {JEKYLL_SITE}")
-        print(f"   Please update JEKYLL_SITE path in this script")
-        sys.exit(1)
-    
-    print(f"\n📂 Jekyll site: {JEKYLL_SITE}")
+    print(f"\n📂 Output directory: {OUTPUT_DIR}")
     print(f"📂 Data source: {CONFIG.bibtex_cache_dir}")
     
     # Generate data files
@@ -130,15 +126,18 @@ def main():
     print("✨ Done! Next steps:")
     print("=" * 60)
     print("1. Review generated files:")
-    print(f"   {JEKYLL_SITE}/_data/publications.yml")
-    print(f"   {JEKYLL_SITE}/_data/projects.yml")
-    print("\n2. Update Jekyll pages:")
-    print(f"   {JEKYLL_SITE}/_pages/publications.md")
-    print(f"   {JEKYLL_SITE}/_pages/projects.md (create if needed)")
-    print("\n3. Test locally:")
-    print(f"   cd {JEKYLL_SITE}")
+    print(f"   {OUTPUT_DIR}/publications.yml")
+    print(f"   {OUTPUT_DIR}/projects.yml")
+    print("\n2. Copy to your Jekyll site:")
+    print("   cp publications.yml <your-jekyll-site>/_data/")
+    print("   cp projects.yml <your-jekyll-site>/_data/")
+    print("\n3. Copy page templates:")
+    print("   cp publications_template.md <your-jekyll-site>/_pages/publications.md")
+    print("   cp projects_template.md <your-jekyll-site>/_pages/projects.md")
+    print("\n4. Test locally:")
+    print("   cd <your-jekyll-site>")
     print("   bundle exec jekyll serve")
-    print("\n4. Commit and push to deploy")
+    print("\n5. Commit and push to deploy")
     print("=" * 60)
 
 

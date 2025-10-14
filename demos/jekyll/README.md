@@ -1,6 +1,6 @@
-# Jekyll Data Generator for goodrobot.ai
+# Jekyll Data Generator Demo
 
-This generator creates Jekyll-compatible YAML data files from your BibTeX sources for use with your Minimal Mistakes GitHub Pages site.
+This demo shows how to generate Jekyll-compatible YAML data files from BibTeX sources for use with Jekyll-based sites (like GitHub Pages with Minimal Mistakes theme).
 
 ## Overview
 
@@ -15,35 +15,33 @@ Instead of generating complete HTML files, this approach:
 ### 1. Generate Data Files
 
 ```bash
-cd /Users/siddh/code/prl_bib2html/jekyll_generator
-python generate_jekyll_data.py
+cd demos/jekyll
+uv run python generate_jekyll_data.py
 ```
 
-This creates:
-- `~/code/siddhss5.github.io/_data/publications.yml`
-- `~/code/siddhss5.github.io/_data/projects.yml`
+This creates in the current directory:
+- `publications.yml`
+- `projects.yml`
 
-**Note:** The generator expects your BibTeX files and projects config in your Jekyll site:
-- BibTeX files: `~/code/siddhss5.github.io/_data/bib/`
-- Projects config: `~/code/siddhss5.github.io/_data/projects_config.yaml`
+The demo uses the shared data directory at `../../data/` (same as Flask and HTML demos).
 
-This keeps all personal data in your website repo, not in the prl_bib2html library.
+### 2. Copy to Your Jekyll Site
 
-### 2. Update Jekyll Pages
-
-Copy the template files to your Jekyll site:
+Copy the generated files and templates to your Jekyll site:
 
 ```bash
-# Replace your publications page
-cp publications_template.md ~/code/siddhss5.github.io/_pages/publications.md
+# Copy data files
+cp publications.yml <your-jekyll-site>/_data/
+cp projects.yml <your-jekyll-site>/_data/
 
-# Create new projects page
-cp projects_template.md ~/code/siddhss5.github.io/_pages/projects.md
+# Copy page templates
+cp publications_template.md <your-jekyll-site>/_pages/publications.md
+cp projects_template.md <your-jekyll-site>/_pages/projects.md
 ```
 
 ### 3. Add Projects to Navigation
 
-Edit `~/code/siddhss5.github.io/_data/navigation.yml`:
+Edit `<your-jekyll-site>/_data/navigation.yml`:
 
 ```yaml
 main:
@@ -68,7 +66,7 @@ main:
 ### 4. Test Locally
 
 ```bash
-cd ~/code/siddhss5.github.io
+cd <your-jekyll-site>
 bundle exec jekyll serve
 ```
 
@@ -77,10 +75,10 @@ Visit: http://localhost:4000/publications/ and http://localhost:4000/projects/
 ### 5. Deploy
 
 ```bash
-cd ~/code/siddhss5.github.io
-git add _data/publications.yml _data/projects.yml _pages/publications.md _pages/projects.md _data/navigation.yml
+cd <your-jekyll-site>
+git add _data/ _pages/ 
 git commit -m "Add project-based publication organization"
-git push origin minimal-mistakes
+git push
 ```
 
 GitHub Pages will automatically rebuild and deploy!
@@ -90,23 +88,24 @@ GitHub Pages will automatically rebuild and deploy!
 When you add new publications or update projects:
 
 ```bash
-# 1. Update BibTeX files or projects in your Jekyll site
-cd ~/code/siddhss5.github.io/_data
-# Edit bib/*.bib files or projects_config.yaml
+# 1. Update your BibTeX files or projects YAML
+# Edit your publication files or projects configuration
 
 # 2. Regenerate Jekyll data
-cd ~/code/prl_bib2html/jekyll_generator
-python generate_jekyll_data.py
+cd demos/jekyll
+uv run python generate_jekyll_data.py
 
-# 3. Commit and push Jekyll site
-cd ~/code/siddhss5.github.io
+# 3. Copy to your Jekyll site
+cp publications.yml projects.yml <your-jekyll-site>/_data/
+
+# 4. Commit and push
+cd <your-jekyll-site>
 git add _data/
 git commit -m "Update publications and projects data"
-git push origin minimal-mistakes
+git push
 ```
 
-**All personal data lives in your Jekyll site repository**, keeping the prl_bib2html
-library clean and reusable.
+For your personal site, you can modify `config.yaml` to point to your own BibTeX sources and projects configuration.
 
 ## Generated Data Structure
 
@@ -181,21 +180,19 @@ Edit `generate_jekyll_data.py` to change:
 
 ## Troubleshooting
 
-### Jekyll site not found
-Update the `JEKYLL_SITE` path in `generate_jekyll_data.py`:
-```python
-JEKYLL_SITE = Path("/path/to/your/jekyll/site")
-```
-
 ### Projects not showing
 1. Ensure project names in BibTeX match YAML exactly
 2. Run generator script to update data files
-3. Check that projects.yml was created in _data/
+3. Check that `projects.yml` was created
+4. Verify you copied it to your Jekyll site's `_data/` directory
 
 ### Styling looks off
-1. Check that you're using `layout: single` and `classes: wide`
+1. Check that you're using `layout: single` and `classes: wide` in the page templates
 2. Verify button class names match Minimal Mistakes: `btn--info`, `btn--primary`, etc.
 3. Test locally with `bundle exec jekyll serve`
+
+### Output files not found
+The generator outputs to the `demos/jekyll/` directory. Check there for the generated `.yml` files.
 
 ## Files in This Directory
 

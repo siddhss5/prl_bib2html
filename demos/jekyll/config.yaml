@@ -3,8 +3,7 @@
 
 bibtex:
   source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/master"
-  # For Jekyll, store BibTeX in the Jekyll site's _data directory
-  cache_dir: "~/code/siddhss5.github.io/_data/bib"
+  cache_dir: "../../data/bib"
   files:
     - name: "siddpubs-journal.bib"
       category: "Journal Papers"
@@ -14,8 +13,7 @@ bibtex:
       category: "Other Papers"
 
 projects:
-  # For Jekyll, projects config lives in the Jekyll site
-  config_file: "~/code/siddhss5.github.io/_data/projects_config.yaml"
+  config_file: "../../data/projects.yaml"
 
 output:
   pdf_base_url: "https://personalrobotics.cs.washington.edu/publications/"

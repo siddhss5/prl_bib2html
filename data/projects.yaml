@@ -6,16 +6,10 @@
 #   - website: Project website URL
 #   - status: Project status (active or archived)
 #
-# Example entries (uncomment and customize):
-#
-# my-robotics-project:
-#   title: "My Robotics Project"
-#   description: "A research project on robotic manipulation"
-#   website: "https://example.com/my-project"
-#   status: "active"
-#
-# another-project:
-#   title: "Another Research Project"
-#   description: "Machine learning for robotics"
-#   website: "https://example.com/another-project"
-#   status: "archived"
+# Example project entry (customize for your own projects):
+
+robotfeeding:
+  title: "Robot-Assisted Feeding"
+  description: "Autonomous feeding systems for people with mobility impairments"
+  website: "https://robotfeeding.io"
+  status: "active"

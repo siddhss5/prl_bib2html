@@ -14,8 +14,7 @@ header:
   {% endfor %}
 {% endfor %}
 
-<p class="notice--info">
-  <strong>{{ total_pubs }} publications</strong> • 
+<p>
   For analytics and citations, visit my <a href="http://scholar.google.com/citations?hl=en&user=RCi98EAAAAAJ">Google Scholar page</a> • 
   BiBTeX available on <a href="https://github.com/personalrobotics/pubs">GitHub</a>
 </p>

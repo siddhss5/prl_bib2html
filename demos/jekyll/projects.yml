@@ -1,0 +1,41 @@
+robotfeeding:
+  title: Robot-Assisted Feeding
+  description: Autonomous feeding systems for people with mobility impairments
+  website: https://robotfeeding.io
+  status: active
+  publications:
+  - title: Lessons Learned from Designing and Evaluating a Robot-assisted Feeding
+      System for Out-of-lab Use
+    authors: A. Nanavati, E. K. Gordon, T. A. Kessler Faulkner, Y. Song, J. Ko, T.
+      Schrenk, V. Nguyen, B. H. Zhu, H. Bolotski, A. Kashyap, S. Kutty, R. Karim,
+      L. Rainbolt, R. Scalise, H. Song, R. Qu, M. Cakmak, and S. S. Srinivasa
+    venue: <em>ACM/IEEE International Conference on Human-Robot Interaction</em>,
+      2025
+    year: 2025
+    pdf_url: https://personalrobotics.cs.washington.edu/publications//nanavati2025lessons.pdf
+    note: <a href="https://robotfeeding.io/publications/hri25a/">Website, Best Systems
+      Paper Award Finalist</a>
+    projects:
+    - robotfeeding
+    entry_type: Conference Papers
+  - title: Towards General Single-Utensil Food Acquisition with Human-Informed Actions
+    authors: E. Gordon<sup>*</sup>, A. Nanavati<sup>*</sup>, R. Challa, B. H. Zhu,
+      T. A. Kessler Faulkner, and S. S. Srinivasa
+    venue: <em>Conference on Robot Learning</em>, 2023
+    year: 2023
+    pdf_url: https://personalrobotics.cs.washington.edu/publications//gordon2023schema.pdf
+    note: null
+    projects:
+    - robotfeeding
+    entry_type: Conference Papers
+  - title: Design Principles for Robot-Assisted Feeding in Social Contexts
+    authors: A. Nanavati<sup>*</sup>, P. Alves-Oliveira<sup>*</sup>, T. Schrenk, E.
+      Gordon, M. Cakmak, and S. S. Srinivasa
+    venue: <em>ACM/IEEE International Conference on Human-Robot Interaction</em>,
+      2023
+    year: 2023
+    pdf_url: https://personalrobotics.cs.washington.edu/publications//nanavati2023designprinciples.pdf
+    note: <b>Best Design Paper Award Winner</b>
+    projects:
+    - robotfeeding
+    entry_type: Conference Papers
