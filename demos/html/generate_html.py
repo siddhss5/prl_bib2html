@@ -19,7 +19,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from prl_bib2html import (
-    PublicationsConfig,
+    LibraryConfig,
     list_publications,
     load_projects_config,
     list_publications_by_project
@@ -28,21 +28,10 @@ from prl_bib2html import (
 def generate_html():
     """Generate a complete HTML publications page."""
     
-    # Get the root directory of the project (two levels up from this file)
-    root_dir = Path(__file__).parent.parent.parent
-    
-    # PRL-specific configuration
-    config = PublicationsConfig(
-        bibtex_base_url="https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug",
-        bibtex_cache_dir=str(root_dir / "data" / "bib"),
-        pdf_base_dir="https://personalrobotics.cs.washington.edu/publications/",
-        bib_files=[
-            ("siddpubs-journal.bib", "Journal Papers"),
-            ("siddpubs-conf.bib", "Conference Papers"),
-            ("siddpubs-misc.bib", "Other Papers"),
-        ],
-        projects_yaml_path=str(root_dir / "data" / "projects.yaml")
-    )
+    # Load configuration from YAML file
+    config_path = Path(__file__).parent / "config.yaml"
+    lib_config = LibraryConfig.from_yaml(str(config_path))
+    config = lib_config.to_publications_config()
     
     # Get publications data
     publications = list_publications(config)

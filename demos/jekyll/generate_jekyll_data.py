@@ -23,47 +23,25 @@ import yaml
 from pathlib import Path
 
 # Add parent directory to path to import prl_bib2html
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from prl_bib2html import (
-    PublicationsConfig,
+    LibraryConfig,
     list_publications,
     load_projects_config,
-    list_publications_by_project
+    list_publications_by_project,
+    publications_to_dict,
+    projects_to_dict,
+    export_to_yaml
 )
 
 # Configuration
-PROJECT_ROOT = Path(__file__).parent.parent
 JEKYLL_SITE = Path.home() / "code" / "siddhss5.github.io"
 
-# PRL configuration
-CONFIG = PublicationsConfig(
-    bibtex_base_url="https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug",
-    # Store BibTeX files in Jekyll site's _data directory
-    bibtex_cache_dir=str(JEKYLL_SITE / "_data" / "bib"),
-    pdf_base_dir="https://personalrobotics.cs.washington.edu/publications/",
-    bib_files=[
-        ("siddpubs-journal.bib", "Journal Papers"),
-        ("siddpubs-conf.bib", "Conference Papers"),
-        ("siddpubs-misc.bib", "Other Papers"),
-    ],
-    # Look for projects config in Jekyll site's _data directory
-    projects_yaml_path=str(JEKYLL_SITE / "_data" / "projects_config.yaml")
-)
-
-
-def publication_to_dict(pub):
-    """Convert Publication dataclass to dictionary for YAML export."""
-    return {
-        'title': pub.title,
-        'authors': pub.authors,
-        'venue': pub.venue,
-        'year': pub.year,
-        'pdf_url': pub.pdf_url,
-        'note': pub.note if pub.note else None,
-        'projects': pub.projects if pub.projects else [],
-        'entry_type': pub.entry_type
-    }
+# Load configuration from YAML file
+config_path = Path(__file__).parent / "config.yaml"
+lib_config = LibraryConfig.from_yaml(str(config_path))
+CONFIG = lib_config.to_publications_config()
 
 
 def generate_publications_yaml():
@@ -73,21 +51,12 @@ def generate_publications_yaml():
     # Get publications organized by year and category
     pubs = list_publications(CONFIG)
     
-    # Convert to YAML-friendly format
-    yaml_data = {}
-    for year, categories in sorted(pubs.items(), reverse=True):
-        yaml_data[year] = {}
-        for category, publications in categories.items():
-            yaml_data[year][category] = [
-                publication_to_dict(pub) for pub in publications
-            ]
+    # Convert to dict using library function
+    yaml_data = publications_to_dict(pubs)
     
     # Write to Jekyll _data directory
     output_file = JEKYLL_SITE / "_data" / "publications.yml"
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    export_to_yaml(yaml_data, str(output_file))
     
     total_pubs = sum(len(pubs) for year in yaml_data.values() for pubs in year.values())
     print(f"✅ Generated: {output_file}")
@@ -110,7 +79,7 @@ def generate_projects_yaml():
     # Get publications grouped by project
     project_pubs = list_publications_by_project(CONFIG, projects_config)
     
-    # Build YAML data with projects sorted (active first, then by newest pub, then alphabetical)
+    # Sort projects (active first, then by newest pub, then alphabetical)
     def project_sort_key(item):
         project_name, project_info = item
         status = project_info.get('status', '').lower()
@@ -122,25 +91,14 @@ def generate_projects_yaml():
         
         return (status_priority, -newest_year, project_name)
     
-    yaml_data = {}
-    for project_name, project_info in sorted(projects_config.items(), key=project_sort_key):
-        yaml_data[project_name] = {
-            'title': project_info.get('title', project_name),
-            'description': project_info.get('description'),
-            'website': project_info.get('website'),
-            'status': project_info.get('status'),
-            'publications': [
-                publication_to_dict(pub)
-                for pub in project_pubs.get(project_name, [])
-            ]
-        }
+    sorted_projects = dict(sorted(projects_config.items(), key=project_sort_key))
+    
+    # Convert to dict using library function
+    yaml_data = projects_to_dict(sorted_projects, project_pubs)
     
     # Write to Jekyll _data directory
     output_file = JEKYLL_SITE / "_data" / "projects.yml"
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    export_to_yaml(yaml_data, str(output_file))
     
     total_project_pubs = sum(len(p['publications']) for p in yaml_data.values())
     print(f"✅ Generated: {output_file}")

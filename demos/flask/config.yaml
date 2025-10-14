@@ -1,0 +1,20 @@
+# Configuration for Flask demo
+# This demonstrates using prl_bib2html with a Flask web application
+
+bibtex:
+  source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug"
+  cache_dir: "../../data/bib"
+  files:
+    - name: "siddpubs-journal.bib"
+      category: "Journal Papers"
+    - name: "siddpubs-conf.bib"
+      category: "Conference Papers"
+    - name: "siddpubs-misc.bib"
+      category: "Other Papers"
+
+projects:
+  config_file: "../../data/projects.yaml"
+
+output:
+  pdf_base_url: "https://personalrobotics.cs.washington.edu/publications/"
+

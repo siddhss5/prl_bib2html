@@ -71,10 +71,53 @@ uv pip install "prl-bib2html[demo]"
 
 ## Quick Start
 
+### Using the CLI (Easiest)
+
+```bash
+# 1. Create a config.yaml file
+cat > config.yaml << EOF
+bibtex:
+  source_url: "https://raw.githubusercontent.com/your-repo/pubs/main"
+  cache_dir: "data/bib"
+  files:
+    - name: "journal.bib"
+      category: "Journal Papers"
+    - name: "conference.bib"
+      category: "Conference Papers"
+
+output:
+  pdf_base_url: "https://your-site.com/pdfs"
+EOF
+
+# 2. Generate data
+prl-bib2html --config config.yaml --format yaml --output publications.yml
+
+# Now use publications.yml in your templating system!
+```
+
+### Using the Python API
+
+```python
+from prl_bib2html import LibraryConfig, list_publications, export_to_yaml
+
+# Load from YAML config file
+config = LibraryConfig.from_yaml("config.yaml")
+
+# Generate publications data
+publications = list_publications(config.to_publications_config())
+
+# Export to YAML or JSON
+export_to_yaml(publications, "publications.yml")
+# Or: export_to_json(publications, "publications.json")
+```
+
+### Legacy API (Still Supported)
+
+The original API still works for backward compatibility:
+
 ```python
 from prl_bib2html import PublicationsConfig, list_publications
 
-# Configure your BibTeX sources
 config = PublicationsConfig(
     bibtex_base_url="https://raw.githubusercontent.com/your-repo/pubs/main",
     bibtex_cache_dir="data/bib",
@@ -82,93 +125,130 @@ config = PublicationsConfig(
     bib_files=[
         ("journal.bib", "Journal Papers"),
         ("conference.bib", "Conference Papers"),
-        ("other.bib", "Other Papers"),
-    ],
-    projects_yaml_path="data/projects.yaml"  # Optional: for project organization
+    ]
 )
 
-# Generate publications data
 publications = list_publications(config)
-
-# publications is now a dict organized by year and category
 # {2024: {"Journal Papers": [Publication, ...], ...}, ...}
-```
-
-### With Project Organization
-
-```python
-from prl_bib2html import (
-    PublicationsConfig,
-    list_publications,
-    load_projects_config,
-    list_publications_by_project
-)
-
-config = PublicationsConfig(
-    # ... configuration as above ...
-    projects_yaml_path="data/projects.yaml"
-)
-
-# Load project metadata
-projects = load_projects_config(config.projects_yaml_path)
-
-# Get publications grouped by project
-project_pubs = list_publications_by_project(config, projects)
-# {project_name: [Publication, ...], ...}
 ```
 
 ## Demos
 
-The project includes two demonstration applications showing different ways to use the library.
+The project includes three demonstration applications showing different ways to consume the generated data.
 
 ### 1. Standalone HTML Generator
 
 **Location**: `demos/html/`
 
-Generate a complete HTML publications page without any web framework.
+Generate complete, self-contained HTML pages with Bootstrap styling.
 
 ```bash
 cd demos/html
 uv run python generate_html.py
 ```
 
-**Features**:
-- ✅ No web framework required
-- ✅ Complete HTML pages with CSS styling
-- ✅ Responsive design
-- ✅ Direct PDF links
-- ✅ Professional academic styling
-- ✅ Project organization support
+**What it demonstrates:**
+- Loading config from `config.yaml`
+- Generating static HTML pages from publication data
+- Bootstrap-based responsive design
 
-**Output**: Generates `publications.html` and `projects.html` that you can open directly in any browser or host on any static file server.
+**Output**: `publications.html` and `projects.html`
 
 ### 2. Flask Web Application
 
 **Location**: `demos/flask/`
 
-A complete Flask web application demonstrating the library in a web framework.
+A dynamic Flask web application serving publication data.
 
 ```bash
 cd demos/flask
 uv run python app.py
 ```
 
-**Features**:
-- ✅ Full web application with routing
-- ✅ Template-based rendering
-- ✅ Publications and Projects pages
-- ✅ Auto-redirect to publications page
-- ✅ Development server with hot reload
+**What it demonstrates:**
+- Loading config from `config.yaml`
+- Using publication data in a web framework
+- Jinja2 templating with live data
 
 **Access**: 
-- http://127.0.0.1:5000/publications - Browse all publications
-- http://127.0.0.1:5000/projects - Browse publications by project
+- http://127.0.0.1:5000/publications
+- http://127.0.0.1:5000/projects
+
+### 3. Jekyll/GitHub Pages Generator
+
+**Location**: `demos/jekyll/`
+
+Generate Jekyll-compatible YAML data files for GitHub Pages sites.
+
+```bash
+cd demos/jekyll
+uv run python generate_jekyll_data.py
+```
+
+**What it demonstrates:**
+- Generating data files for Jekyll's Liquid templating
+- Integration with Minimal Mistakes theme
+- Workflow for static site generators
+
+**Output**: `_data/publications.yml` and `_data/projects.yml` in your Jekyll site
 
 ## Configuration
 
-### PublicationsConfig
+### Configuration File (Recommended)
 
-The main configuration class that controls how the library works:
+Create a `config.yaml` file to configure the library:
+
+```yaml
+bibtex:
+  source_url: "https://raw.githubusercontent.com/your-repo/pubs/main"
+  cache_dir: "data/bib"
+  files:
+    - name: "journal.bib"
+      category: "Journal Papers"
+    - name: "conference.bib"
+      category: "Conference Papers"
+
+projects:
+  config_file: "data/projects.yaml"
+
+output:
+  pdf_base_url: "https://your-site.com/pdfs"
+```
+
+Then use it with the CLI:
+```bash
+prl-bib2html --config config.yaml --output publications.yml
+```
+
+Or in Python:
+```python
+from prl_bib2html import LibraryConfig
+
+config = LibraryConfig.from_yaml("config.yaml")
+```
+
+### CLI Usage
+
+```bash
+# Generate YAML output (default)
+prl-bib2html --config config.yaml --output publications.yml
+
+# Generate JSON output
+prl-bib2html --config config.yaml --format json --output publications.json
+
+# Generate both publications and projects to a directory
+prl-bib2html --config config.yaml --output-dir _data/
+
+# Generate only publications
+prl-bib2html --config config.yaml --publications-only --output pubs.yml
+
+# Generate only projects
+prl-bib2html --config config.yaml --projects-only --output projects.yml
+```
+
+### PublicationsConfig (Legacy)
+
+The original configuration class still works for backward compatibility:
 
 ```python
 @dataclass

@@ -1,0 +1,35 @@
+# Example configuration file for prl_bib2html
+#
+# This file demonstrates how to configure prl_bib2html for your publications.
+# Copy this file and customize it for your needs.
+
+bibtex:
+  # URL where BibTeX files are hosted (GitHub, GitLab, etc.)
+  source_url: "https://raw.githubusercontent.com/your-username/pubs/main"
+  
+  # Local directory to cache downloaded BibTeX files
+  cache_dir: "data/bib"
+  
+  # List of BibTeX files to process
+  files:
+    - name: "journal.bib"
+      category: "Journal Papers"
+    
+    - name: "conference.bib"
+      category: "Conference Papers"
+    
+    - name: "misc.bib"
+      category: "Other Papers"
+
+# Projects configuration (optional)
+projects:
+  # Path to projects YAML file
+  config_file: "data/projects.yaml"
+
+# Output configuration
+output:
+  # Base URL or directory for PDF files
+  # Can be a URL: "https://example.com/pdfs"
+  # Or a local path: "data/pdfs"
+  pdf_base_url: "https://your-site.com/publications"
+

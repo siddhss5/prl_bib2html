@@ -10,9 +10,10 @@ MIT License - see LICENSE file for details.
 """
 
 import os
+from pathlib import Path
 from flask import Flask, render_template, redirect, url_for
 from prl_bib2html import (
-    PublicationsConfig,
+    LibraryConfig,
     list_publications,
     load_projects_config,
     list_publications_by_project
@@ -20,24 +21,13 @@ from prl_bib2html import (
 
 app = Flask(__name__, template_folder='templates')
 
-# Get the root directory of the project (two levels up from this file)
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Load configuration from YAML file
+CONFIG_FILE = os.environ.get("CONFIG_FILE", "config.yaml")
+CONFIG_PATH = Path(__file__).parent / CONFIG_FILE
 
-# PRL-specific configuration
-PRL_CONFIG = PublicationsConfig(
-    bibtex_base_url=os.environ.get(
-        "BIBTEX_BASE_URL", 
-        "https://raw.githubusercontent.com/personalrobotics/pubs/refs/heads/siddhss5-href-flip-bug"
-    ),
-    bibtex_cache_dir=os.environ.get("BIBTEX_CACHE_DIR", os.path.join(ROOT_DIR, "data/bib")),
-    pdf_base_dir=os.environ.get("PDF_BASE_DIR", "https://personalrobotics.cs.washington.edu/publications/"),
-    bib_files=[
-        ("siddpubs-journal.bib", "Journal Papers"),
-        ("siddpubs-conf.bib", "Conference Papers"),
-        ("siddpubs-misc.bib", "Other Papers"),
-    ],
-    projects_yaml_path=os.environ.get("PROJECTS_YAML_PATH", os.path.join(ROOT_DIR, "data/projects.yaml"))
-)
+# Load configuration
+config = LibraryConfig.from_yaml(str(CONFIG_PATH))
+PRL_CONFIG = config.to_publications_config()
 
 @app.route("/")
 def index():

@@ -68,6 +68,19 @@ class Publication:
     note: str
     pdf_url: Optional[str]
     projects: List[str]
+    
+    def to_dict(self) -> dict:
+        """Convert Publication to dictionary for serialization."""
+        return {
+            'title': self.title,
+            'authors': self.authors,
+            'venue': self.venue,
+            'year': self.year,
+            'pdf_url': self.pdf_url,
+            'note': self.note if self.note else None,
+            'projects': self.projects if self.projects else [],
+            'entry_type': self.entry_type
+        }
 
 def latex_to_html(text: str) -> str:
     if not isinstance(text, str):
