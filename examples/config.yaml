@@ -23,8 +23,8 @@ bibtex:
 
 # Projects configuration (optional)
 projects:
-  # Path to projects YAML file
-  config_file: "data/projects.yaml"
+  # Path to projects configuration file
+  config_file: "data/projects-config.yaml"
 
 # Output configuration
 output:

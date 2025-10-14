@@ -38,9 +38,9 @@ Add a `project` field to your BibTeX entries:
 }
 ```
 
-### 2. Projects YAML File
+### 2. Projects Configuration File
 
-Create a `data/projects.yaml` file with your project metadata:
+Create a `data/projects-config.yaml` file with your project metadata:
 
 ```yaml
 ada:
@@ -77,7 +77,7 @@ config = PublicationsConfig(
         ("journal.bib", "Journal Papers"),
         ("conference.bib", "Conference Papers"),
     ],
-    projects_yaml_path="data/projects.yaml"  # Add this line
+    projects_yaml_path="data/projects-config.yaml"  # Add this line
 )
 ```
 
@@ -95,11 +95,11 @@ from prl_bib2html import (
 # Load configuration
 config = PublicationsConfig(
     # ... your config ...
-    projects_yaml_path="data/projects.yaml"
+    projects_yaml_path="data/projects-config.yaml"
 )
 
 # Load projects metadata
-projects_config = load_projects_config(config.projects_yaml_path)
+projects_config = load_projects_config("data/projects-config.yaml")
 
 # Get publications grouped by project
 project_pubs = list_publications_by_project(config, projects_config)

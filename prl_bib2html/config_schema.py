@@ -86,7 +86,7 @@ class LibraryConfig:
                   category: "Conference Papers"
             
             projects:
-              config_file: "data/projects.yaml"
+              config_file: "data/projects-config.yaml"
             
             output:
               pdf_base_url: "https://example.com/pdfs"

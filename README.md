@@ -209,7 +209,7 @@ bibtex:
       category: "Conference Papers"
 
 projects:
-  config_file: "data/projects.yaml"
+  config_file: "data/projects-config.yaml"
 
 output:
   pdf_base_url: "https://your-site.com/pdfs"
@@ -359,7 +359,7 @@ Organize publications by research projects using BibTeX tags and YAML metadata:
    }
    ```
 
-2. **Create `data/projects.yaml`:**
+2. **Create `data/projects-config.yaml`:**
    ```yaml
    robotics:
      title: "Robotics Research"
