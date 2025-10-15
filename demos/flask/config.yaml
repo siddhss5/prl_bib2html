@@ -2,8 +2,7 @@
 # This demonstrates using prl_bib2html with a Flask web application
 
 bibtex:
-  source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/master"
-  cache_dir: "../../data/bib"
+  bib_dir: "../../data/bib"
   files:
     - name: "siddpubs-journal.bib"
       category: "Journal Papers"

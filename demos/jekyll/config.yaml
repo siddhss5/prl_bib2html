@@ -2,8 +2,7 @@
 # This demonstrates generating Jekyll-compatible YAML data files
 
 bibtex:
-  source_url: "https://raw.githubusercontent.com/personalrobotics/pubs/master"
-  cache_dir: "../../data/bib"
+  bib_dir: "../../data/bib"
   files:
     - name: "siddpubs-journal.bib"
       category: "Journal Papers"

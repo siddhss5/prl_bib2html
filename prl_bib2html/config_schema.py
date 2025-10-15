@@ -25,8 +25,7 @@ class BibtexFile:
 @dataclass
 class BibtexConfig:
     """Configuration for BibTeX sources."""
-    source_url: str
-    cache_dir: str
+    bib_dir: str
     files: List[BibtexFile]
     
     @classmethod
@@ -34,8 +33,7 @@ class BibtexConfig:
         """Create from dictionary."""
         files = [BibtexFile(**f) for f in data.get('files', [])]
         return cls(
-            source_url=data['source_url'],
-            cache_dir=data['cache_dir'],
+            bib_dir=data['bib_dir'],
             files=files
         )
 
@@ -77,8 +75,7 @@ class LibraryConfig:
             
         Example YAML structure:
             bibtex:
-              source_url: "https://github.com/user/pubs/main"
-              cache_dir: "data/bib"
+              bib_dir: "data/bib"
               files:
                 - name: "journal.bib"
                   category: "Journal Papers"
@@ -110,8 +107,8 @@ class LibraryConfig:
         from .publications import PublicationsConfig
         
         return PublicationsConfig(
-            bibtex_base_url=self.bibtex.source_url,
-            bibtex_cache_dir=self.bibtex.cache_dir,
+            bibtex_base_url=None,  # No longer used
+            bibtex_cache_dir=self.bibtex.bib_dir,
             pdf_base_dir=self.output.pdf_base_url,
             bib_files=[(f.name, f.category) for f in self.bibtex.files],
             projects_yaml_path=self.projects.config_file if self.projects else None

@@ -4,11 +4,8 @@
 # Copy this file and customize it for your needs.
 
 bibtex:
-  # URL where BibTeX files are hosted (GitHub, GitLab, etc.)
-  source_url: "https://raw.githubusercontent.com/your-username/pubs/main"
-  
-  # Local directory to cache downloaded BibTeX files
-  cache_dir: "data/bib"
+  # Directory containing your BibTeX files
+  bib_dir: "data/bib"
   
   # List of BibTeX files to process
   files:

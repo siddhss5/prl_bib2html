@@ -77,8 +77,7 @@ uv pip install "prl-bib2html[demo]"
 # 1. Create a config.yaml file
 cat > config.yaml << EOF
 bibtex:
-  source_url: "https://raw.githubusercontent.com/your-repo/pubs/main"
-  cache_dir: "data/bib"
+  bib_dir: "data/bib"
   files:
     - name: "journal.bib"
       category: "Journal Papers"
@@ -119,7 +118,7 @@ The original API still works for backward compatibility:
 from prl_bib2html import PublicationsConfig, list_publications
 
 config = PublicationsConfig(
-    bibtex_base_url="https://raw.githubusercontent.com/your-repo/pubs/main",
+    bibtex_base_url=None,  # No longer used
     bibtex_cache_dir="data/bib",
     pdf_base_dir="https://your-domain.com/pdfs",
     bib_files=[
@@ -200,8 +199,7 @@ Create a `config.yaml` file to configure the library:
 
 ```yaml
 bibtex:
-  source_url: "https://raw.githubusercontent.com/your-repo/pubs/main"
-  cache_dir: "data/bib"
+  bib_dir: "data/bib"
   files:
     - name: "journal.bib"
       category: "Journal Papers"
@@ -253,8 +251,8 @@ The original configuration class still works for backward compatibility:
 ```python
 @dataclass
 class PublicationsConfig:
-    bibtex_base_url: str           # Base URL for BibTeX files
-    bibtex_cache_dir: str          # Local cache directory
+    bibtex_base_url: str           # Base URL for BibTeX files (deprecated, use bib_dir in config.yaml)
+    bibtex_cache_dir: str          # Local directory containing BibTeX files
     pdf_base_dir: str              # Base directory/URL for PDFs (supports both local paths and URLs)
     bib_files: List[tuple]         # List of (filename, display_name) tuples
     projects_yaml_path: Optional[str]  # Optional path to projects YAML file
@@ -341,9 +339,9 @@ Author names are intelligently formatted:
 - Affiliation superscripts preserved
 - Special characters handled
 
-### Caching
+### BibTeX File Management
 
-BibTeX files are automatically cached locally to improve performance and reduce network requests.
+Place your BibTeX files directly in the specified directory. No downloading or caching is required - just provide the path to your local BibTeX files.
 
 ### Project Organization
 
