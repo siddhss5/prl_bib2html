@@ -11,7 +11,7 @@ MIT License - see LICENSE file for details.
 """
 
 from .config import LabDataConfig, BibFile
-from .models import LabData, Publication, Author, Person, Project
+from .models import LabData, Publication, Author, Person, Project, Collaborator
 from .assembler import assemble
 from .exporters import export_to_yaml, export_to_json
 
@@ -25,6 +25,7 @@ __all__ = [
     "Author",
     "Person",
     "Project",
+    "Collaborator",
     # Pipeline
     "assemble",
     # Export

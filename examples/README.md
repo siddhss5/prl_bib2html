@@ -34,6 +34,6 @@ See `basic_usage.py` for a more complete example that inspects the assembled dat
 
 See `config.yaml` for an annotated example of the configuration format.
 
-## Framework-Specific Examples
+## Jekyll Site
 
-For full working demos with Jekyll, Flask, and standalone HTML, see the [`demos/`](../demos/) directory.
+For a complete Jekyll site that renders labdata output, see the [`site/`](../site/) directory.

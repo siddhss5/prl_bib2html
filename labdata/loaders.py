@@ -44,6 +44,7 @@ def load_people(path: str) -> List[Person]:
             photo=entry.get('photo'),
             website=entry.get('website'),
             email=entry.get('email'),
+            co_advisor=entry.get('co_advisor'),
             start_year=entry.get('start_year'),
             end_year=entry.get('end_year'),
             degree=entry.get('degree'),

@@ -8,3 +8,12 @@ env/
 data/pubs/
 *.egg-info/
 uv.lock
+
+# Generated site data (built by labdata CLI)
+site/_data/lab.yml
+
+# Jekyll build artifacts
+site/_site/
+site/.jekyll-cache/
+site/.jekyll-metadata
+Gemfile.lock

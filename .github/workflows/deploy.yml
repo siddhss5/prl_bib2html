@@ -1,4 +1,4 @@
-name: Deploy HTML Demo to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -17,42 +17,44 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-        
+        python-version: '3.11'
+
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
         version: latest
-        
-    - name: Create virtual environment and install dependencies
+
+    - name: Install labdata
       run: |
         uv venv
-        uv pip install -e ".[demo]"
-        
-    - name: Generate HTML
-      run: |
-        cd demos/html
-        uv run python generate_html.py
-        
+        uv pip install -e .
+
+    - name: Generate site data
+      run: uv run labdata --config lab.yaml --output site/_data/lab.yml
+
     - name: Setup Pages
       uses: actions/configure-pages@v4
+
+    - name: Build Jekyll site
+      uses: actions/jekyll-build-pages@v1
       with:
-        enablement: true
-      
+        source: ./site
+        destination: ./_site
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
-      with:
-        path: './demos/html'
-        retention-days: 1
-        
+
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v4 
+      uses: actions/deploy-pages@v4

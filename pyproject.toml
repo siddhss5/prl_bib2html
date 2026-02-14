@@ -9,9 +9,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-demo = [
-    "Flask"
-]
 test = [
     "pytest",
     "pytest-cov"

@@ -12,7 +12,8 @@ MIT License - see LICENSE file for details.
 from typing import List, Optional
 
 from .config import LabDataConfig
-from .models import LabData, Publication
+from collections import Counter
+from .models import LabData, Collaborator, Publication
 from .parsers.bibtex import parse_all_publications
 from .loaders import load_people, load_projects
 from .resolver import resolve_authors, resolve_projects, compute_backlinks
@@ -46,11 +47,27 @@ def assemble(config: LabDataConfig) -> LabData:
     resolve_authors(publications, people)
     resolve_projects(publications, projects)
 
+    # Compute collaborators (external co-authors not in people.yaml)
+    collab_counts: dict = {}
+    collab_years: dict = {}
+    for pub in publications:
+        for author in pub.authors:
+            if author.person_id is None:
+                collab_counts[author.name] = collab_counts.get(author.name, 0) + 1
+                collab_years[author.name] = max(collab_years.get(author.name, 0), pub.year)
+    collaborators = sorted(
+        [Collaborator(name=name, publication_count=collab_counts[name],
+                      last_year=collab_years[name])
+         for name in collab_counts],
+        key=lambda c: (-c.last_year, -c.publication_count, c.name),
+    )
+
     # Assemble
     data = LabData(
         publications=publications,
         people=people,
         projects=projects,
+        collaborators=collaborators,
     )
 
     # Back-link

@@ -76,6 +76,7 @@ class Person:
     photo: Optional[str] = None
     website: Optional[str] = None
     email: Optional[str] = None
+    co_advisor: Optional[str] = None
     start_year: Optional[int] = None
 
     # Alumni-specific
@@ -102,6 +103,8 @@ class Person:
             d['photo'] = self.photo
         if self.email:
             d['email'] = self.email
+        if self.co_advisor:
+            d['co_advisor'] = self.co_advisor
         if self.start_year:
             d['start_year'] = self.start_year
         if self.status == 'alumni':
@@ -116,6 +119,21 @@ class Person:
         if self.publication_ids:
             d['publication_ids'] = self.publication_ids
         return d
+
+
+@dataclass
+class Collaborator:
+    """An external co-author not listed in people.yaml."""
+    name: str
+    publication_count: int = 0
+    last_year: int = 0
+
+    def to_dict(self) -> dict:
+        return {
+            'name': self.name,
+            'publication_count': self.publication_count,
+            'last_year': self.last_year,
+        }
 
 
 @dataclass
@@ -150,6 +168,7 @@ class LabData:
     publications: List[Publication] = field(default_factory=list)
     people: List[Person] = field(default_factory=list)
     projects: List[Project] = field(default_factory=list)
+    collaborators: List[Collaborator] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
@@ -157,4 +176,5 @@ class LabData:
             'publications': [p.to_dict() for p in self.publications],
             'people': [p.to_dict() for p in self.people],
             'projects': [p.to_dict() for p in self.projects],
+            'collaborators': [c.to_dict() for c in self.collaborators],
         }

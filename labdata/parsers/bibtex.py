@@ -46,7 +46,12 @@ def parse_author_list(raw_author_field: str) -> List[Author]:
 
     authors = []
     for name in name_list:
+        # Strip equal contribution markers (* or ^{*} which becomes <sup>*</sup>)
+        if isinstance(name, str):
+            name = name.replace('<sup>*</sup>', '').rstrip('*').rstrip()
         abbrev = _abbreviate_name(name)
+        # Also clean the final abbreviated name
+        abbrev = abbrev.replace('<sup>*</sup>', '').rstrip('*').rstrip()
         authors.append(Author(name=abbrev))
     return authors
 

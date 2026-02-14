@@ -1,0 +1,29 @@
+<div style="margin-bottom: 1.5em;">
+  <div style="margin-bottom: 0.3em;">
+    {% if include.pub.pdf_url %}
+      <a href="{{ include.pub.pdf_url }}"><strong>{{ include.pub.title }}</strong></a>
+    {% else %}
+      <strong>{{ include.pub.title }}</strong>
+    {% endif %}
+  </div>
+  <div style="color: #666; margin-bottom: 0.3em;">
+    {% include author_list.html authors=include.pub.authors %}
+  </div>
+  <div style="margin-bottom: 0.3em;">
+    {{ include.pub.venue | markdownify | remove: "<p>" | remove: "</p>" }}
+    {% if include.pub.note %}<br><strong>{{ include.pub.note | markdownify | remove: "<p>" | remove: "</p>" }}</strong>{% endif %}
+  </div>
+  <div>
+    {% if include.pub.doi_url %}
+      <a href="{{ include.pub.doi_url }}" class="btn btn--inverse btn--small" target="_blank">DOI</a>
+    {% endif %}
+    {% if include.pub.arxiv_url %}
+      <a href="{{ include.pub.arxiv_url }}" class="btn btn--inverse btn--small" target="_blank">arXiv</a>
+    {% endif %}
+    {% if include.pub.project_ids.size > 0 %}
+      {% for pid in include.pub.project_ids %}
+        <a href="/projects/#{{ pid }}" class="btn btn--info btn--small" style="margin: 0.1em;">{{ pid }}</a>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>

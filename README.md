@@ -162,17 +162,25 @@ for person in data.people:
     print(f"{person.name}: {person.publication_count} publications")
 ```
 
-## Demos
+## Site
 
-Working examples for common site generators:
+The [`site/`](site/) directory contains a complete Jekyll site using the [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) theme. It renders publications, people, and projects pages from labdata output.
 
-| Demo | Location | Description |
-|------|----------|-------------|
-| **Jekyll** | [`demos/jekyll/`](demos/jekyll/) | Generate YAML data files + Liquid templates for Jekyll/GitHub Pages |
-| **Flask** | [`demos/flask/`](demos/flask/) | Dynamic web app with Jinja2 templates |
-| **HTML** | [`demos/html/`](demos/html/) | Static standalone HTML page generator |
+**To use it with your own data:**
 
-Each demo includes a `config.yaml` and can be run against the sample data in `data/`.
+1. Fork this repo
+2. Edit `lab.yaml` to point to your BibTeX files
+3. Enable GitHub Pages (Settings → Pages → Source: GitHub Actions)
+4. Push — the site builds and deploys automatically
+
+**To preview locally:**
+
+```bash
+labdata --config lab.yaml --output site/_data/lab.yml
+cd site && bundle install && bundle exec jekyll serve
+```
+
+The GitHub Actions workflow in `.github/workflows/deploy.yml` runs `labdata` to generate `site/_data/lab.yml`, then builds and deploys the Jekyll site to GitHub Pages.
 
 ## How Author Matching Works
 
@@ -187,7 +195,6 @@ Authors who don't match anyone in `people.yaml` are left with `person_id: null`.
 
 - **bibtexparser** - BibTeX parsing
 - **pyyaml** - YAML I/O
-- **Flask** (optional) - only needed for the Flask demo
 
 No network calls. All processing is local and offline.
 
