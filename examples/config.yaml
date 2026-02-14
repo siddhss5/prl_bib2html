@@ -1,32 +1,27 @@
 # Example configuration file for labdata
 #
-# This file demonstrates how to configure labdata for your publications.
-# Copy this file and customize it for your needs.
+# This file tells labdata where to find your BibTeX files,
+# people, and projects.
 
-bibtex:
-  # Directory containing your BibTeX files
-  bib_dir: "data/bib"
-  
-  # List of BibTeX files to process
-  files:
-    - name: "journal.bib"
-      category: "Journal Papers"
-    
-    - name: "conference.bib"
-      category: "Conference Papers"
-    
-    - name: "misc.bib"
-      category: "Other Papers"
+# Directory containing your BibTeX files
+bib_dir: "data/bib"
 
-# Projects configuration (optional)
-projects:
-  # Path to projects configuration file
-  config_file: "data/projects-config.yaml"
+# List of BibTeX files to process
+bib_files:
+  - name: "journal.bib"
+    category: "Journal Papers"
 
-# Output configuration
-output:
-  # Base URL or directory for PDF files
-  # Can be a URL: "https://example.com/pdfs"
-  # Or a local path: "data/pdfs"
-  pdf_base_url: "https://your-site.com/publications"
+  - name: "conference.bib"
+    category: "Conference Papers"
 
+  - name: "misc.bib"
+    category: "Other Papers"
+
+# Base URL for PDF files (optional)
+pdf_base_url: "https://your-site.com/publications"
+
+# Path to people YAML file (optional)
+people_file: "data/people.yaml"
+
+# Path to projects YAML file (optional)
+projects_file: "data/projects.yaml"

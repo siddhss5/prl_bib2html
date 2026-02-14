@@ -1,19 +1,14 @@
 # Configuration for standalone HTML generator demo
-# This demonstrates generating static HTML pages with labdata
+# Uses the new labdata flat config format
 
-bibtex:
-  bib_dir: "../../data/bib"
-  files:
-    - name: "siddpubs-journal.bib"
-      category: "Journal Papers"
-    - name: "siddpubs-conf.bib"
-      category: "Conference Papers"
-    - name: "siddpubs-misc.bib"
-      category: "Other Papers"
+bib_dir: "../../data/bib"
+bib_files:
+  - name: "siddpubs-journal.bib"
+    category: "Journal Papers"
+  - name: "siddpubs-conf.bib"
+    category: "Conference Papers"
+  - name: "siddpubs-misc.bib"
+    category: "Other Papers"
 
-projects:
-  config_file: "../../data/projects-config.yaml"
-
-output:
-  pdf_base_url: "https://personalrobotics.cs.washington.edu/publications/"
-
+pdf_base_url: "https://personalrobotics.cs.washington.edu/publications/"
+projects_file: "../../data/projects-config.yaml"
