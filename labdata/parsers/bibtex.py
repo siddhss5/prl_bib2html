@@ -188,7 +188,8 @@ def resolve_pdf_url(bib_id: str, pdf_base_url: Optional[str]) -> Optional[str]:
     """Construct a PDF URL for a given bib entry."""
     if not pdf_base_url:
         return None
-    pdf_path = f"{pdf_base_url}/{bib_id}.pdf"
+    base = pdf_base_url.rstrip('/')
+    pdf_path = f"{base}/{bib_id}.pdf"
     if pdf_base_url.startswith(('http://', 'https://')):
         return pdf_path
     return pdf_path if Path(pdf_path).exists() else None
