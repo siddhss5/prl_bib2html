@@ -27,6 +27,11 @@ class LabDataConfig:
     """Configuration for labdata, loadable from YAML.
 
     Example lab.yaml:
+        lab:
+          name: "My Lab"
+          description: "What our lab does"
+          website: "https://mylab.edu"
+
         bib_dir: "data/bib"
         bib_files:
           - name: "journal.bib"

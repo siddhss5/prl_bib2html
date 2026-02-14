@@ -20,8 +20,8 @@ The output works with Jekyll, Hugo, Flask, Eleventy, React, or anything else tha
 ## Installation
 
 ```bash
-git clone https://github.com/siddhss5/prl_bib2html.git
-cd prl_bib2html
+git clone https://github.com/siddhss5/labdata.git
+cd labdata
 pip install -e .
 ```
 
@@ -30,6 +30,12 @@ pip install -e .
 **1. Create a configuration file** (`lab.yaml`):
 
 ```yaml
+lab:
+  name: "My Lab"
+  description: "What our lab does"
+  university: "University Name"
+  website: "https://mylab.edu"
+
 bib_dir: "data/bib"
 bib_files:
   - name: "journal.bib"

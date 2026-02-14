@@ -50,6 +50,41 @@ class TestLabDataConfig:
         assert config.people_file is None
         assert config.projects_file is None
 
+    def test_lab_metadata(self, tmp_path):
+        config_data = {
+            "bib_dir": "bib",
+            "bib_files": [
+                {"name": "pubs.bib", "category": "Publications"},
+            ],
+            "lab": {
+                "name": "Test Lab",
+                "description": "A test lab",
+                "website": "https://testlab.edu",
+            },
+        }
+        config_path = tmp_path / "lab.yaml"
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f)
+
+        config = LabDataConfig.from_yaml(str(config_path))
+        assert config.lab is not None
+        assert config.lab["name"] == "Test Lab"
+        assert config.lab["website"] == "https://testlab.edu"
+
+    def test_lab_metadata_optional(self, tmp_path):
+        config_data = {
+            "bib_dir": "bib",
+            "bib_files": [
+                {"name": "pubs.bib", "category": "Publications"},
+            ],
+        }
+        config_path = tmp_path / "lab.yaml"
+        with open(config_path, 'w') as f:
+            yaml.dump(config_data, f)
+
+        config = LabDataConfig.from_yaml(str(config_path))
+        assert config.lab is None
+
     def test_bib_file_dataclass(self):
         bf = BibFile(name="test.bib", category="Test")
         assert bf.name == "test.bib"

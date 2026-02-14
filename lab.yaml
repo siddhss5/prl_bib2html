@@ -17,5 +17,5 @@ bib_files:
     category: "Other Papers"
 
 pdf_base_url: "https://personalrobotics.cs.washington.edu/publications"
-projects_file: "data/projects-config.yaml"
+projects_file: "data/projects.yaml"
 people_file: "data/people.yaml"

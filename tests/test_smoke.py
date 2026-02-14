@@ -6,7 +6,7 @@ import labdata
 def test_package_imports():
     """Verify the package can be imported and has expected attributes."""
     assert hasattr(labdata, '__version__')
-    assert labdata.__version__ == "2.0.0-dev"
+    assert labdata.__version__ == "2.0.0"
 
 
 def test_core_classes_importable():
