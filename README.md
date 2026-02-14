@@ -1,43 +1,33 @@
 # labdata
 
-Renderer-agnostic academic lab data assembler.
+A data assembler for academic lab websites. Turns BibTeX files and simple YAML into structured, cross-referenced data that any site generator can consume.
 
-## Overview
+## The Problem
 
-`labdata` transforms BibTeX files and simple YAML configuration into structured data (YAML/JSON) for academic lab websites. It resolves cross-references between publications, people, and projects into a single connected dataset that any downstream renderer can consume.
+Every academic lab maintains BibTeX files. Building a website from them means writing custom scripts that break whenever the data format changes, duplicating author metadata across files, and manually keeping publication pages in sync with project pages.
 
-**Input:** BibTeX files + YAML for people and projects + one config file
+## What labdata Does
 
-**Output:** Structured YAML/JSON with resolved cross-references
+labdata reads your existing BibTeX files, combines them with optional YAML files for people and projects, and outputs a single structured YAML or JSON file with all cross-references resolved:
 
-Works with Jekyll, Hugo, Flask, React, or any other framework.
+- Publication authors are matched to lab members (via configurable aliases and fuzzy matching)
+- Publications are linked to research projects (via BibTeX `project` tags)
+- People and projects get back-linked lists of their publications
+- LaTeX formatting is converted to Markdown (not HTML), so any renderer can consume it
 
-## Features
-
-- **BibTeX Processing**: Parse BibTeX files with rich academic metadata
-- **LaTeX to Markdown**: Convert LaTeX accents, formatting, and math to Markdown
-- **Author Resolution**: Match publication authors to lab members via aliases + fuzzy matching
-- **People & Projects**: Track lab members (current + alumni) and research projects
-- **Cross-References**: Automatic back-linking between publications, people, and projects
-- **Multiple Outputs**: Export to YAML or JSON
-- **Validation**: CLI flags to check data quality and find unresolved authors
-
-## Prerequisites
-
-- Python 3.8+
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+The output works with Jekyll, Hugo, Flask, Eleventy, React, or anything else that reads YAML/JSON.
 
 ## Installation
 
 ```bash
-git clone https://github.com/personalrobotics/labdata.git
-cd labdata
-uv pip install -e .
+git clone https://github.com/siddhss5/prl_bib2html.git
+cd prl_bib2html
+pip install -e .
 ```
 
 ## Quick Start
 
-### 1. Create a config file (`lab.yaml`)
+**1. Create a configuration file** (`lab.yaml`):
 
 ```yaml
 bib_dir: "data/bib"
@@ -47,80 +37,62 @@ bib_files:
   - name: "conference.bib"
     category: "Conference Papers"
 
-pdf_base_url: "https://your-site.com/pdfs"
-people_file: "data/people.yaml"
-projects_file: "data/projects.yaml"
+pdf_base_url: "https://your-lab.edu/pdfs"
+people_file: "data/people.yaml"       # optional
+projects_file: "data/projects.yaml"   # optional
 ```
 
-### 2. Generate data
+**2. Run it:**
 
 ```bash
 labdata --config lab.yaml --output lab.yml
 ```
 
-### 3. Validate
+**3. Check your data quality:**
 
 ```bash
-# Check data quality
+# Summary and validation
 labdata --config lab.yaml --validate
 
-# See unresolved author names
+# List author names that couldn't be matched to lab members
 labdata --config lab.yaml --unresolved
 ```
 
-### Python API
+## Input Files
 
-```python
-from labdata import LabDataConfig, assemble, export_to_yaml
+### BibTeX Files
 
-config = LabDataConfig.from_yaml("lab.yaml")
-data = assemble(config)
-export_to_yaml(data, "lab.yml")
+Standard `.bib` files. Tag publications with projects using a `project` field:
 
-# Access the data directly
-for pub in data.publications:
-    print(pub.title, [a.name for a in pub.authors])
-```
-
-## Data Model
-
-### Publications
-
-Each BibTeX entry becomes a `Publication` with structured, renderer-agnostic fields:
-
-```yaml
-publications:
-  - bib_id: "smith2024robot"
-    title: "Robot-Assisted Feeding"     # Markdown, not HTML
-    authors:
-      - name: "J. Smith"
-        person_id: "jsmith"            # resolved to people.yaml
-      - name: "E. External"
-        person_id: null                # external collaborator
-    year: 2024
-    venue: "*IEEE T-RO*, 2024"         # Markdown
-    category: "Journal Papers"
-    doi_url: "https://doi.org/..."
-    project_ids: ["robotfeeding"]
+```bibtex
+@inproceedings{nanavati2025lessons,
+  title   = {Lessons Learned from Robot-assisted Feeding},
+  author  = {Nanavati, Amal and Srinivasa, Siddhartha},
+  year    = {2025},
+  project = {robotfeeding}
+}
 ```
 
 ### People (`data/people.yaml`)
 
+A list of lab members and alumni. The `aliases` field is how labdata matches BibTeX author names to people:
+
 ```yaml
-- id: "jsmith"
-  name: "John Smith"
-  aliases: ["J. Smith", "John A. Smith"]
-  role: "pi"
+- id: "nanavati"
+  name: "Amal Nanavati"
+  aliases: ["A. Nanavati", "A. M. Nanavati"]
+  role: "phd_student"
   status: "current"
-  website: "https://jsmith.example.com"
+  website: "https://amaln.com"
 
 - id: "jdoe"
   name: "Jane Doe"
-  aliases: ["J. Doe"]
+  aliases: ["J. Doe", "J. A. Doe"]
   role: "phd_student"
   status: "alumni"
   end_year: 2023
   degree: "PhD"
+  thesis_title: "Adaptive Robot Manipulation"
   current_position: "Research Scientist at Google"
 ```
 
@@ -129,38 +101,96 @@ publications:
 ```yaml
 - id: "robotfeeding"
   title: "Robot-Assisted Feeding"
-  description: "Autonomous feeding systems"
+  description: "Autonomous feeding for people with mobility impairments"
   website: "https://robotfeeding.io"
   status: "active"
 ```
 
-### BibTeX Project Tags
+## Output
 
-Tag publications with projects using the `project` field in BibTeX:
+A single YAML (or JSON) file with three sections:
 
-```bibtex
-@inproceedings{smith2024,
-  title = {My Paper},
-  author = {Smith, J.},
-  year = {2024},
-  project = {robotics, planning}
-}
+```yaml
+publications:
+  - bib_id: "nanavati2025lessons"
+    title: "Lessons Learned from Robot-assisted Feeding"
+    authors:
+      - name: "A. Nanavati"
+        person_id: "nanavati"       # matched to people.yaml
+      - name: "S. Srinivasa"
+        person_id: null             # external collaborator
+    year: 2025
+    venue: "*HRI*, 2025"            # Markdown formatting
+    category: "Conference Papers"
+    pdf_url: "https://your-lab.edu/pdfs/nanavati2025lessons.pdf"
+    doi_url: "https://doi.org/10.1234/..."
+    project_ids: ["robotfeeding"]
+
+people:
+  - id: "nanavati"
+    name: "Amal Nanavati"
+    role: "phd_student"
+    status: "current"
+    publication_count: 12
+    publication_ids: ["nanavati2025lessons", ...]   # auto-computed
+
+projects:
+  - id: "robotfeeding"
+    title: "Robot-Assisted Feeding"
+    status: "active"
+    publication_ids: ["nanavati2025lessons", ...]   # auto-computed
+    people_ids: ["nanavati", ...]                   # auto-computed
+```
+
+## Python API
+
+```python
+from labdata import LabDataConfig, assemble, export_to_yaml
+
+config = LabDataConfig.from_yaml("lab.yaml")
+data = assemble(config)
+
+# Export to file
+export_to_yaml(data, "lab.yml")
+
+# Or work with the data directly
+for pub in data.publications:
+    authors = ", ".join(a.name for a in pub.authors)
+    print(f"{pub.title} ({authors})")
+
+for person in data.people:
+    print(f"{person.name}: {person.publication_count} publications")
 ```
 
 ## Demos
 
-- `demos/jekyll/` - Jekyll/GitHub Pages data generator
-- `demos/html/` - Standalone HTML page generator
-- `demos/flask/` - Flask web application
+Working examples for common site generators:
+
+| Demo | Location | Description |
+|------|----------|-------------|
+| **Jekyll** | [`demos/jekyll/`](demos/jekyll/) | Generate YAML data files + Liquid templates for Jekyll/GitHub Pages |
+| **Flask** | [`demos/flask/`](demos/flask/) | Dynamic web app with Jinja2 templates |
+| **HTML** | [`demos/html/`](demos/html/) | Static standalone HTML page generator |
+
+Each demo includes a `config.yaml` and can be run against the sample data in `data/`.
+
+## How Author Matching Works
+
+labdata uses a two-pass strategy to match BibTeX author names to lab members:
+
+1. **Exact alias match**: Checks each author name against the `aliases` list in `people.yaml` (after normalizing case, accents, and punctuation)
+2. **Fuzzy fallback**: Uses string similarity (threshold: 0.85) to catch minor spelling variations
+
+Authors who don't match anyone in `people.yaml` are left with `person_id: null`. Use `labdata --unresolved` to review them.
 
 ## Dependencies
 
-- `bibtexparser` - BibTeX parsing
-- `pyyaml` - YAML I/O
-- `Flask` (optional) - For Flask demo
+- **bibtexparser** - BibTeX parsing
+- **pyyaml** - YAML I/O
+- **Flask** (optional) - only needed for the Flask demo
+
+No network calls. All processing is local and offline.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
-Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
+MIT License. Copyright (c) 2024 Personal Robotics Laboratory, University of Washington.

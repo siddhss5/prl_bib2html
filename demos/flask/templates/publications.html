@@ -4,45 +4,34 @@
 <div class="container mt-4">
   <h1>Publications</h1>
 
-  {# pubs is a dict: {year: {pub_type: [entries]}} #}
-  {% for year, type_groups in pubs | dictsort(reverse=true) %}
-    <h2 class="mt-5">{{ year }}</h2>
+  {% set ns = namespace(current_year=0) %}
+  {% for pub in publications %}
+    {% if pub.year != ns.current_year %}
+      {% set ns.current_year = pub.year %}
+      <h2 class="mt-5">{{ pub.year }}</h2>
+    {% endif %}
 
-    {% for pub_type, entries in type_groups.items() %}
-      <h4 class="mt-4">{{ pub_type }}</h4>
-      <ul class="list-unstyled">
-        {% for entry in entries %}
-          <li class="mb-3">
-            <p class="mb-1">
-              {% if entry.pdf_url %}
-                <a href="{{ entry.pdf_url }}"><strong>{{ entry.title | safe }}</strong></a>
-              {% else %}
-                <strong>{{ entry.title | safe }}</strong>
-              {% endif %}
-            </p>
-
-            <p class="mb-1">{{ entry.authors | safe }}</p>
-
-            <p class="mb-0">
-              {% if entry.venue %}
-                {{ entry.venue | safe }}
-              {% endif %}
-              {% if entry.note %}
-                <br><b>{{ entry.note | safe }}</b>
-              {% endif %}
-              {% if entry.projects %}
-                <br>
-                {% for project in entry.projects %}
-                  {% if project in projects_config %}
-                    <a href="/projects#{{ project }}" class="badge bg-info text-decoration-none">{{ project }}</a>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-            </p>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endfor %}
+    <div class="mb-3">
+      <p class="mb-1">
+        {% if pub.pdf_url %}
+          <a href="{{ pub.pdf_url }}"><strong>{{ pub.title }}</strong></a>
+        {% else %}
+          <strong>{{ pub.title }}</strong>
+        {% endif %}
+      </p>
+      <p class="mb-1 text-muted">
+        {% for author in pub.authors %}{{ author.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+      </p>
+      <p class="mb-0">
+        {{ pub.venue }}
+        {% if pub.note %}<br><strong>{{ pub.note }}</strong>{% endif %}
+        {% if pub.doi_url %}<br><a href="{{ pub.doi_url }}" class="text-muted small">DOI</a>{% endif %}
+        {% if pub.arxiv_url %} <a href="{{ pub.arxiv_url }}" class="text-muted small">arXiv</a>{% endif %}
+      </p>
+      {% for pid in pub.project_ids %}
+        <a href="/projects#{{ pid }}" class="badge bg-info text-decoration-none">{{ pid }}</a>
+      {% endfor %}
+    </div>
   {% endfor %}
 </div>
 {% endblock %}

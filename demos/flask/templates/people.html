@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>People</h1>
+
+  {% if people %}
+    {% for person in people %}
+    <div class="mb-3">
+      <h5>
+        {% if person.website %}
+          <a href="{{ person.website }}">{{ person.name }}</a>
+        {% else %}
+          {{ person.name }}
+        {% endif %}
+        {% if person.role %}
+          <span class="text-muted small">({{ person.role }})</span>
+        {% endif %}
+        <span class="badge bg-{{ 'success' if person.status == 'current' else 'secondary' }} ms-1">
+          {{ person.status | capitalize }}
+        </span>
+      </h5>
+      {% if person.publication_count %}
+        <p class="text-muted small mb-0">{{ person.publication_count }} publication(s)</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="lead">No people configured.</p>
+  {% endif %}
+</div>
+{% endblock %}

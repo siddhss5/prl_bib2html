@@ -1,15 +1,8 @@
 # Examples
 
-Simple examples demonstrating how to use labdata.
+Minimal examples showing how to use labdata from the command line and from Python.
 
-## Files
-
-- `config.yaml` - Example configuration file
-- `basic_usage.py` - Python API examples
-
-## Quick Start
-
-### Using the CLI
+## Command Line
 
 ```bash
 # Generate YAML output
@@ -18,14 +11,14 @@ labdata --config config.yaml --output lab.yml
 # Generate JSON output
 labdata --config config.yaml --format json --output lab.json
 
-# Validate configuration and see data summary
+# Validate data and see a summary
 labdata --config config.yaml --validate
 
-# Show unresolved author names
+# List author names that couldn't be matched to lab members
 labdata --config config.yaml --unresolved
 ```
 
-### Using the Python API
+## Python API
 
 ```python
 from labdata import LabDataConfig, assemble, export_to_yaml
@@ -33,20 +26,14 @@ from labdata import LabDataConfig, assemble, export_to_yaml
 config = LabDataConfig.from_yaml("config.yaml")
 data = assemble(config)
 export_to_yaml(data, "lab.yml")
-
-# Access the data
-for pub in data.publications:
-    print(pub.title, [a.name for a in pub.authors])
 ```
 
-## Configuration File Format
+See `basic_usage.py` for a more complete example that inspects the assembled data.
 
-See `config.yaml` for a complete annotated example.
+## Configuration
 
-## More Complex Examples
+See `config.yaml` for an annotated example of the configuration format.
 
-For full-featured examples with web frameworks and templates, see the `demos/` directory:
+## Framework-Specific Examples
 
-- `demos/flask/` - Flask web application
-- `demos/html/` - Static HTML generator
-- `demos/jekyll/` - Jekyll/GitHub Pages generator
+For full working demos with Jekyll, Flask, and standalone HTML, see the [`demos/`](../demos/) directory.

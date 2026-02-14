@@ -1,213 +1,86 @@
-# Jekyll Data Generator Demo
+# Jekyll Demo
 
-This demo shows how to generate Jekyll-compatible YAML data files from BibTeX sources for use with Jekyll-based sites (like GitHub Pages with Minimal Mistakes theme).
+Generate a `lab.yml` data file from BibTeX, then render it in Jekyll using the included Liquid templates.
 
-## Overview
-
-Instead of generating complete HTML files, this approach:
-1. ✅ Generates YAML data files that Jekyll can read
-2. ✅ Uses Jekyll's Liquid templating to render pages
-3. ✅ Automatically inherits Minimal Mistakes styling
-4. ✅ Stays fully within the Jekyll/GitHub Pages ecosystem
-
-## Quick Start
-
-### 1. Generate Data Files
+## Usage
 
 ```bash
 cd demos/jekyll
-uv run python generate_jekyll_data.py
+python generate_jekyll_data.py
 ```
 
-This creates in the current directory:
-- `publications.yml`
-- `projects.yml`
+This produces `lab.yml` containing all publications, people, and projects.
 
-The demo uses the shared data directory at `../../data/` (same as Flask and HTML demos).
+## Integrating with Your Jekyll Site
 
-### 2. Copy to Your Jekyll Site
-
-Copy the generated files and templates to your Jekyll site:
+**1. Copy the data file:**
 
 ```bash
-# Copy data files
-cp publications.yml <your-jekyll-site>/_data/
-cp projects.yml <your-jekyll-site>/_data/
+cp lab.yml <your-jekyll-site>/_data/
+```
 
-# Copy page templates
+**2. Copy the page templates:**
+
+```bash
 cp publications_template.md <your-jekyll-site>/_pages/publications.md
 cp projects_template.md <your-jekyll-site>/_pages/projects.md
 ```
 
-### 3. Add Projects to Navigation
-
-Edit `<your-jekyll-site>/_data/navigation.yml`:
+**3. Add navigation** (in `_data/navigation.yml`):
 
 ```yaml
 main:
-  - title: "CV"
-    url: /cv/
-  - title: "Contact"
-    url: /contact/
   - title: "Publications"
     url: /publications/
-  - title: "Projects"        # ADD THIS
-    url: /projects/          # ADD THIS
-  - title: "Teaching"
-    url: /teaching/
-  - title: "Posts"
-    url: /posts/
-  - title: "Categories"
-    url: /categories/
-  - title: "Tags"
-    url: /tags/
+  - title: "Projects"
+    url: /projects/
 ```
 
-### 4. Test Locally
+**4. Test locally:**
 
 ```bash
 cd <your-jekyll-site>
 bundle exec jekyll serve
 ```
 
-Visit: http://localhost:4000/publications/ and http://localhost:4000/projects/
+## Updating Publications
 
-### 5. Deploy
-
-```bash
-cd <your-jekyll-site>
-git add _data/ _pages/ 
-git commit -m "Add project-based publication organization"
-git push
-```
-
-GitHub Pages will automatically rebuild and deploy!
-
-## Workflow for Updates
-
-When you add new publications or update projects:
+When you add new BibTeX entries or update your YAML files:
 
 ```bash
-# 1. Update your BibTeX files or projects YAML
-# Edit your publication files or projects configuration
-
-# 2. Regenerate Jekyll data
 cd demos/jekyll
-uv run python generate_jekyll_data.py
-
-# 3. Copy to your Jekyll site
-cp publications.yml projects.yml <your-jekyll-site>/_data/
-
-# 4. Commit and push
+python generate_jekyll_data.py
+cp lab.yml <your-jekyll-site>/_data/
 cd <your-jekyll-site>
-git add _data/
-git commit -m "Update publications and projects data"
-git push
+git add _data/lab.yml && git commit -m "Update publications" && git push
 ```
 
-For your personal site, you can modify `config.yaml` to point to your own BibTeX sources and projects configuration.
+## Configuration
 
-## Generated Data Structure
-
-### publications.yml
+Edit `config.yaml` to point to your own BibTeX and YAML files:
 
 ```yaml
-2025:
-  Journal Papers:
-    - title: "Paper Title"
-      authors: "A. Author and B. Author"
-      venue: "Journal Name, 2025"
-      year: 2025
-      pdf_url: "https://..."
-      note: "Award info"
-      projects: ["project1", "project2"]
-      entry_type: "Journal Papers"
-  Conference Papers:
-    - title: "..."
-      # ...
-2024:
-  # ...
+bib_dir: "path/to/your/bib"
+bib_files:
+  - name: "journal.bib"
+    category: "Journal Papers"
+  - name: "conference.bib"
+    category: "Conference Papers"
+
+pdf_base_url: "https://your-lab.edu/pdfs"
+people_file: "path/to/people.yaml"
+projects_file: "path/to/projects.yaml"
 ```
 
-### projects.yml
+## Template Customization
 
-```yaml
-robotfeeding:
-  title: "Robot-Assisted Feeding"
-  description: "Project description"
-  website: "https://robotfeeding.io"
-  status: "active"
-  publications:
-    - title: "..."
-      authors: "..."
-      # ... (same structure as above)
-```
+The included templates (`publications_template.md`, `projects_template.md`) are designed for the Minimal Mistakes theme but can be adapted to any Jekyll theme. They access data from `site.data.lab.publications`, `site.data.lab.people`, and `site.data.lab.projects`.
 
-## Customization
+## Files
 
-### Styling
-
-The template pages use inline styles that work with Minimal Mistakes. You can customize:
-
-- Button styles: `btn--info`, `btn--success`, `btn--secondary`, `btn--primary`
-- Notices: `notice`, `notice--info`, `notice--warning`
-- Layout: `layout: single`, `classes: wide`
-
-### Templates
-
-Edit the template files to change:
-- Publication formatting
-- Project card layout
-- Header images
-- Additional metadata display
-
-### Configuration
-
-Edit `generate_jekyll_data.py` to change:
-- BibTeX source URLs
-- Jekyll site path
-- Project sort order
-- Data structure
-
-## Advantages of This Approach
-
-1. **Full Jekyll Integration**: Pages render with Jekyll, inherit all theme features
-2. **GitHub Pages Compatible**: No external build step required
-3. **Easy Updates**: Just run one Python script and push
-4. **Flexible Templating**: Use Liquid to customize rendering
-5. **Automatic Styling**: Minimal Mistakes theme applied automatically
-6. **Fast Builds**: Jekyll only rebuilds when data changes
-
-## Troubleshooting
-
-### Projects not showing
-1. Ensure project names in BibTeX match YAML exactly
-2. Run generator script to update data files
-3. Check that `projects.yml` was created
-4. Verify you copied it to your Jekyll site's `_data/` directory
-
-### Styling looks off
-1. Check that you're using `layout: single` and `classes: wide` in the page templates
-2. Verify button class names match Minimal Mistakes: `btn--info`, `btn--primary`, etc.
-3. Test locally with `bundle exec jekyll serve`
-
-### Output files not found
-The generator outputs to the `demos/jekyll/` directory. Check there for the generated `.yml` files.
-
-## Files in This Directory
-
-- `generate_jekyll_data.py` - Main generator script
-- `publications_template.md` - Example publications page for Jekyll
-- `projects_template.md` - Example projects page for Jekyll
-- `README.md` - This file
-
-## Next Steps
-
-1. Run the generator: `python generate_jekyll_data.py`
-2. Review the generated YAML files
-3. Copy templates to your Jekyll site
-4. Test locally
-5. Deploy to GitHub Pages
-
-For questions or issues, see the main project README or PROJECTS_FEATURE.md.
-
+| File | Purpose |
+|------|---------|
+| `generate_jekyll_data.py` | Runs labdata and writes `lab.yml` |
+| `config.yaml` | labdata configuration (BibTeX paths, etc.) |
+| `publications_template.md` | Jekyll page template for publications |
+| `projects_template.md` | Jekyll page template for projects |
