@@ -8,6 +8,7 @@ classes: wide
 {% assign people = site.data.lab.people %}
 {% assign collaborators = site.data.lab.collaborators %}
 
+{% assign pi = people | where: "role", "professor" | first %}
 {% assign current_phd = people | where: "status", "current" | where: "role", "phd_student" %}
 {% assign current_ms = people | where: "status", "current" | where: "role", "ms_student" %}
 
@@ -16,6 +17,12 @@ classes: wide
 {% assign alumni_ms = people | where: "status", "alumni" | where: "role", "ms_student" %}
 
 {% if people.size > 0 %}
+
+{% if pi %}
+## Principal Investigator
+
+<span id="{{ pi.id }}">{% if pi.website %}[{{ pi.name }}]({{ pi.website }}){% else %}{{ pi.name }}{% endif %}</span>
+{% endif %}
 
 {% if current_phd.size > 0 %}
 ## PhD Students

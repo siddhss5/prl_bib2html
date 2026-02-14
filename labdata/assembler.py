@@ -78,6 +78,7 @@ def assemble(config: LabDataConfig, diagnostics: bool = False):
         people=people,
         projects=projects,
         collaborators=collaborators,
+        lab=config.lab,
     )
 
     # Back-link

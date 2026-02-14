@@ -10,7 +10,7 @@ MIT License - see LICENSE file for details.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import Dict, Optional, List
 
 
 @dataclass
@@ -173,12 +173,16 @@ class LabData:
     people: List[Person] = field(default_factory=list)
     projects: List[Project] = field(default_factory=list)
     collaborators: List[Collaborator] = field(default_factory=list)
+    lab: Optional[Dict[str, str]] = None
 
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
-        return {
+        d = {
             'publications': [p.to_dict() for p in self.publications],
             'people': [p.to_dict() for p in self.people],
             'projects': [p.to_dict() for p in self.projects],
             'collaborators': [c.to_dict() for c in self.collaborators],
         }
+        if self.lab:
+            d['lab'] = self.lab
+        return d

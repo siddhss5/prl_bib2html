@@ -1,7 +1,7 @@
 remote_theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "default"
 
-title: "Lab Publications"
+title: "Personal Robotics Lab"
 description: "Academic lab website powered by labdata"
 
 # GitHub Pages base URL — set to repo name if deploying as project site

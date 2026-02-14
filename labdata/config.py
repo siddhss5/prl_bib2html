@@ -11,7 +11,7 @@ MIT License - see LICENSE file for details.
 
 import yaml
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Dict, List, Optional
 from pathlib import Path
 
 
@@ -43,6 +43,7 @@ class LabDataConfig:
     pdf_base_url: Optional[str] = None
     people_file: Optional[str] = None
     projects_file: Optional[str] = None
+    lab: Optional[Dict[str, str]] = None
 
     @classmethod
     def from_yaml(cls, path: str) -> 'LabDataConfig':
@@ -60,4 +61,5 @@ class LabDataConfig:
             pdf_base_url=data.get('pdf_base_url'),
             people_file=data.get('people_file'),
             projects_file=data.get('projects_file'),
+            lab=data.get('lab'),
         )
