@@ -40,10 +40,11 @@ class Publication:
     video_url: Optional[str] = None
 
     project_ids: List[str] = field(default_factory=list)
+    bibtex: Optional[str] = None
 
     def to_dict(self) -> dict:
         """Convert to dictionary for serialization."""
-        return {
+        d = {
             'bib_id': self.bib_id,
             'title': self.title,
             'authors': [
@@ -63,6 +64,9 @@ class Publication:
             'video_url': self.video_url,
             'project_ids': self.project_ids,
         }
+        if self.bibtex:
+            d['bibtex'] = self.bibtex
+        return d
 
 
 @dataclass

@@ -1,4 +1,4 @@
-<div style="margin-bottom: 1.5em;">
+<div class="pub-entry" style="margin-bottom: 1.5em;" data-searchable="{{ include.pub.title | downcase }} {{ include.pub.authors | map: 'name' | join: ' ' | downcase }} {{ include.pub.venue | downcase }} {{ include.pub.bib_id | downcase }}">
   <div style="margin-bottom: 0.3em;">
     {% if include.pub.pdf_url %}
       <a href="{{ include.pub.pdf_url }}"><strong>{{ include.pub.title }}</strong></a>
@@ -20,10 +20,36 @@
     {% if include.pub.arxiv_url %}
       <a href="{{ include.pub.arxiv_url }}" class="btn btn--inverse btn--small" target="_blank">arXiv</a>
     {% endif %}
+    {% if include.pub.abstract %}
+      <button class="btn btn--inverse btn--small" onclick="this.parentElement.parentElement.querySelector('.pub-abstract').toggleAttribute('open')">Abstract</button>
+    {% endif %}
+    {% if include.pub.bibtex %}
+      <button class="btn btn--inverse btn--small" onclick="var b=this.parentElement.parentElement.querySelector('.pub-bibtex');b.toggleAttribute('open');if(b.open){b.querySelector('code').scrollIntoView({block:'nearest'})}">BibTeX</button>
+    {% endif %}
+    {% if include.pub.video_url %}
+      <a href="{{ include.pub.video_url }}" class="btn btn--inverse btn--small" target="_blank">Video</a>
+    {% endif %}
     {% if include.pub.project_ids.size > 0 %}
       {% for pid in include.pub.project_ids %}
         <a href="/projects/#{{ pid }}" class="btn btn--info btn--small" style="margin: 0.1em;">{{ pid }}</a>
       {% endfor %}
     {% endif %}
   </div>
+  {% if include.pub.abstract %}
+  <details class="pub-abstract" style="margin-top: 0.5em;">
+    <summary style="display: none;"></summary>
+    <div style="padding: 0.8em; background: #f8f8f8; border-left: 3px solid #ccc; font-size: 0.9em; margin-top: 0.3em;">
+      {{ include.pub.abstract }}
+    </div>
+  </details>
+  {% endif %}
+  {% if include.pub.bibtex %}
+  <details class="pub-bibtex" style="margin-top: 0.5em;">
+    <summary style="display: none;"></summary>
+    <div style="position: relative; margin-top: 0.3em;">
+      <button onclick="navigator.clipboard.writeText(this.nextElementSibling.textContent.trim()).then(function(){event.target.textContent='Copied!';setTimeout(function(){event.target.textContent='Copy'},1500)})" style="position: absolute; top: 0.3em; right: 0.3em; font-size: 0.75em; padding: 0.2em 0.5em; cursor: pointer; background: #fff; border: 1px solid #ccc; border-radius: 3px;">Copy</button>
+      <code style="display: block; padding: 0.8em; background: #f8f8f8; border-left: 3px solid #ccc; font-size: 0.8em; white-space: pre-wrap; overflow-x: auto;">{{ include.pub.bibtex | xml_escape }}</code>
+    </div>
+  </details>
+  {% endif %}
 </div>

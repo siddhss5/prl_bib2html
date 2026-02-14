@@ -200,6 +200,24 @@ def resolve_pdf_url(bib_id: str, pdf_base_url: Optional[str]) -> Optional[str]:
     return pdf_path if Path(pdf_path).exists() else None
 
 
+def format_bibtex_entry(entry: dict) -> str:
+    """Reconstruct a clean BibTeX string from a parsed entry dict."""
+    entry_type = entry.get("ENTRYTYPE", "misc")
+    entry_id = entry.get("ID", "unknown")
+
+    # Fields to include (skip internal bibtexparser keys)
+    skip_keys = {"ID", "ENTRYTYPE"}
+    lines = [f"@{entry_type}{{{entry_id},"]
+    for key, value in entry.items():
+        if key in skip_keys or not value:
+            continue
+        # Clean up braces in value
+        clean_val = str(value).strip()
+        lines.append(f"  {key} = {{{clean_val}}},")
+    lines.append("}")
+    return "\n".join(lines)
+
+
 def entry_to_publication(
     entry: dict,
     category: str,
@@ -231,6 +249,7 @@ def entry_to_publication(
         url=url if url and not video_url else None,
         video_url=video_url,
         project_ids=parse_project_ids(entry),
+        bibtex=format_bibtex_entry(entry),
     )
 
 
