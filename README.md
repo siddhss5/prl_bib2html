@@ -1,10 +1,10 @@
-# prl-bib2html
+# labdata
 
 A Python library for converting BibTeX files to HTML for academic publications websites.
 
 ## Overview
 
-`prl-bib2html` is a lightweight Python library that transforms BibTeX publication files into clean, categorized HTML output. It's designed for academic labs and researchers who want to display their publications on websites with professional formatting.
+`labdata` is a lightweight Python library that transforms BibTeX publication files into clean, categorized HTML output. It's designed for academic labs and researchers who want to display their publications on websites with professional formatting.
 
 ## Features
 
@@ -31,8 +31,8 @@ Since this package is not yet published to PyPI, you need to install it from the
 
 ```bash
 # Clone the repository
-git clone https://github.com/personalrobotics/prl_bib2html.git
-cd prl_bib2html
+git clone https://github.com/personalrobotics/labdata.git
+cd labdata
 
 # Create and activate virtual environment (uv handles this automatically)
 uv venv
@@ -63,10 +63,10 @@ Once the package is published to PyPI, you'll be able to install it directly:
 
 ```bash
 # Core library
-uv pip install prl-bib2html
+uv pip install labdata
 
 # With demo support
-uv pip install "prl-bib2html[demo]"
+uv pip install "labdata[demo]"
 ```
 
 ## Quick Start
@@ -89,7 +89,7 @@ output:
 EOF
 
 # 2. Generate data
-prl-bib2html --config config.yaml --format yaml --output publications.yml
+labdata --config config.yaml --format yaml --output publications.yml
 
 # Now use publications.yml in your templating system!
 ```
@@ -97,7 +97,7 @@ prl-bib2html --config config.yaml --format yaml --output publications.yml
 ### Using the Python API
 
 ```python
-from prl_bib2html import LibraryConfig, list_publications, export_to_yaml
+from labdata import LibraryConfig, list_publications, export_to_yaml
 
 # Load from YAML config file
 config = LibraryConfig.from_yaml("config.yaml")
@@ -115,7 +115,7 @@ export_to_yaml(publications, "publications.yml")
 The original API still works for backward compatibility:
 
 ```python
-from prl_bib2html import PublicationsConfig, list_publications
+from labdata import PublicationsConfig, list_publications
 
 config = PublicationsConfig(
     bibtex_base_url=None,  # No longer used
@@ -215,12 +215,12 @@ output:
 
 Then use it with the CLI:
 ```bash
-prl-bib2html --config config.yaml --output publications.yml
+labdata --config config.yaml --output publications.yml
 ```
 
 Or in Python:
 ```python
-from prl_bib2html import LibraryConfig
+from labdata import LibraryConfig
 
 config = LibraryConfig.from_yaml("config.yaml")
 ```
@@ -229,19 +229,19 @@ config = LibraryConfig.from_yaml("config.yaml")
 
 ```bash
 # Generate YAML output (default)
-prl-bib2html --config config.yaml --output publications.yml
+labdata --config config.yaml --output publications.yml
 
 # Generate JSON output
-prl-bib2html --config config.yaml --format json --output publications.json
+labdata --config config.yaml --format json --output publications.json
 
 # Generate both publications and projects to a directory
-prl-bib2html --config config.yaml --output-dir _data/
+labdata --config config.yaml --output-dir _data/
 
 # Generate only publications
-prl-bib2html --config config.yaml --publications-only --output pubs.yml
+labdata --config config.yaml --publications-only --output pubs.yml
 
 # Generate only projects
-prl-bib2html --config config.yaml --projects-only --output projects.yml
+labdata --config config.yaml --projects-only --output projects.yml
 ```
 
 ### PublicationsConfig (Legacy)
@@ -382,8 +382,8 @@ For detailed documentation, see [PROJECTS_FEATURE.md](PROJECTS_FEATURE.md).
 ## Project Structure
 
 ```
-prl_bib2html/
-├── prl_bib2html/           # Core library
+labdata/
+├── labdata/           # Core library
 │   ├── __init__.py
 │   └── publications.py
 ├── demos/                  # Demonstration applications
@@ -402,8 +402,7 @@ prl_bib2html/
 
 ### Core Dependencies
 - `bibtexparser` - BibTeX parsing
-- `requests` - HTTP requests for remote files
-- `pyyaml` - YAML parsing for project metadata
+- `pyyaml` - YAML parsing for configuration and project metadata
 
 ### Optional Dependencies
 - `Flask` - Web framework (for Flask demo)

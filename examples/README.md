@@ -1,6 +1,6 @@
 # Examples
 
-Simple examples demonstrating how to use prl_bib2html.
+Simple examples demonstrating how to use labdata.
 
 ## Files
 
@@ -17,19 +17,19 @@ cp examples/config.yaml myconfig.yaml
 # Edit myconfig.yaml with your settings
 
 # 2. Generate YAML output
-prl-bib2html --config myconfig.yaml --format yaml --output publications.yml
+labdata --config myconfig.yaml --format yaml --output publications.yml
 
 # 3. Generate JSON output
-prl-bib2html --config myconfig.yaml --format json --output publications.json
+labdata --config myconfig.yaml --format json --output publications.json
 
 # 4. Generate both publications and projects
-prl-bib2html --config myconfig.yaml --output-dir _data/
+labdata --config myconfig.yaml --output-dir _data/
 ```
 
 ### Using the Python API
 
 ```python
-from prl_bib2html import LibraryConfig, list_publications, export_to_yaml
+from labdata import LibraryConfig, list_publications, export_to_yaml
 
 # Load config
 config = LibraryConfig.from_yaml("config.yaml")

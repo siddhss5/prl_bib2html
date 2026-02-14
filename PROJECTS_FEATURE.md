@@ -67,7 +67,7 @@ dart:
 Update your `PublicationsConfig` to include the projects YAML path:
 
 ```python
-from prl_bib2html import PublicationsConfig
+from labdata import PublicationsConfig
 
 config = PublicationsConfig(
     bibtex_base_url="https://example.com/pubs",
@@ -86,7 +86,7 @@ config = PublicationsConfig(
 ### Core Library
 
 ```python
-from prl_bib2html import (
+from labdata import (
     PublicationsConfig,
     load_projects_config,
     list_publications_by_project

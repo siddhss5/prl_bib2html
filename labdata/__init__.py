@@ -1,8 +1,9 @@
 """
-PRL BibTeX to HTML converter module.
+labdata - Renderer-agnostic academic lab data assembler.
 
-This module provides functionality to convert BibTeX files to HTML format
-for displaying publications on a website.
+Transforms BibTeX files and YAML configuration into structured data
+(YAML/JSON) for academic lab websites. Framework-agnostic: works with
+Jekyll, Hugo, Flask, or any other consumer.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
 Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
@@ -51,4 +52,4 @@ __all__ = [
     "export_to_yaml",
     "export_to_json"
 ]
-__version__ = "1.0.0" 
+__version__ = "2.0.0-dev"

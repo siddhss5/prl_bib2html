@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Basic usage example for prl_bib2html.
+Basic usage example for labdata.
 
 This demonstrates the simple Python API for generating publication data.
 """
 
 from pathlib import Path
-from prl_bib2html import (
+from labdata import (
     LibraryConfig,
     list_publications,
     load_projects_config,

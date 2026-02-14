@@ -1,5 +1,5 @@
 # Configuration for standalone HTML generator demo
-# This demonstrates generating static HTML pages with prl_bib2html
+# This demonstrates generating static HTML pages with labdata
 
 bibtex:
   bib_dir: "../../data/bib"

@@ -1,6 +1,6 @@
-# Example configuration file for prl_bib2html
+# Example configuration file for labdata
 #
-# This file demonstrates how to configure prl_bib2html for your publications.
+# This file demonstrates how to configure labdata for your publications.
 # Copy this file and customize it for your needs.
 
 bibtex:

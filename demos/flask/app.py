@@ -1,7 +1,7 @@
 """
-Flask web application demo for prl_bib2html.
+Flask web application demo for labdata.
 
-This demo shows how to use the prl_bib2html library in a Flask web application
+This demo shows how to use the labdata library in a Flask web application
 to display publications on a website.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
@@ -12,7 +12,7 @@ MIT License - see LICENSE file for details.
 import os
 from pathlib import Path
 from flask import Flask, render_template, redirect, url_for
-from prl_bib2html import (
+from labdata import (
     LibraryConfig,
     list_publications,
     load_projects_config,

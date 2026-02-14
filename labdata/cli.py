@@ -1,5 +1,5 @@
 """
-Command-line interface for prl_bib2html.
+Command-line interface for labdata.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
 Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
@@ -23,13 +23,13 @@ def main():
         epilog="""
 Examples:
   # Generate YAML output
-  prl-bib2html --config config.yaml --format yaml --output publications.yml
-  
+  labdata --config config.yaml --format yaml --output publications.yml
+
   # Generate JSON output
-  prl-bib2html --config config.yaml --format json --output publications.json
-  
+  labdata --config config.yaml --format json --output publications.json
+
   # Generate both publications and projects
-  prl-bib2html --config config.yaml --format yaml --output-dir _data/
+  labdata --config config.yaml --format yaml --output-dir _data/
         """
     )
     

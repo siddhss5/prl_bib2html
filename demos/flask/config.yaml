@@ -1,5 +1,5 @@
 # Configuration for Flask demo
-# This demonstrates using prl_bib2html with a Flask web application
+# This demonstrates using labdata with a Flask web application
 
 bibtex:
   bib_dir: "../../data/bib"

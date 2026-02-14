@@ -1,5 +1,5 @@
 """
-Configuration schema for prl_bib2html.
+Configuration schema for labdata.
 
 This module provides dataclasses for loading configuration from YAML files,
 enabling a clean separation between configuration and code.
@@ -53,7 +53,7 @@ class OutputConfig:
 @dataclass
 class LibraryConfig:
     """
-    Main configuration class for prl_bib2html.
+    Main configuration class for labdata.
     
     This replaces PublicationsConfig with a more structured approach
     that can be loaded from YAML files.

@@ -1,8 +1,9 @@
 """
-BibTeX to HTML conversion utilities.
+BibTeX to HTML conversion utilities (legacy).
 
 This module provides functions for parsing BibTeX files and converting them
-to HTML format for academic publications websites.
+to HTML format for academic publications websites. Will be replaced by
+the new pipeline in later phases.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
 Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
@@ -11,7 +12,6 @@ MIT License - see LICENSE file for details.
 
 import os
 import re
-import requests
 import yaml
 from pathlib import Path
 from collections import defaultdict
@@ -139,14 +139,7 @@ def format_authors(raw_author_field: str) -> str:
     return ', '.join(authors[:-1]) + ', and ' + authors[-1]
 
 def fetch_bibtex(name: str, config: PublicationsConfig):
-    bib_url = f"{config.bibtex_base_url}/{name}"
     bib_path = f"{config.bibtex_cache_dir}/{name}"
-    os.makedirs(os.path.dirname(bib_path), exist_ok=True)
-    if not os.path.exists(bib_path):
-        response = requests.get(bib_url)
-        response.raise_for_status()
-        with open(bib_path, 'w', encoding='utf-8') as f:
-            f.write(response.text)
     with open(bib_path, 'r', encoding='utf-8') as f:
         parser = BibTexParser(common_strings=True)
         return bibtexparser.load(f, parser)

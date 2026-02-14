@@ -24,10 +24,10 @@ import sys
 import yaml
 from pathlib import Path
 
-# Add parent directory to path to import prl_bib2html
+# Add parent directory to path to import labdata
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from prl_bib2html import (
+from labdata import (
     LibraryConfig,
     list_publications,
     load_projects_config,

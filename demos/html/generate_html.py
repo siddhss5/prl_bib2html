@@ -2,7 +2,7 @@
 """
 Standalone HTML generator for PRL publications.
 
-This script demonstrates how to use the prl_bib2html library
+This script demonstrates how to use the labdata library
 to generate a complete HTML publications page without any web framework.
 
 Copyright (c) 2024 Personal Robotics Laboratory, University of Washington
@@ -18,7 +18,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from prl_bib2html import (
+from labdata import (
     LibraryConfig,
     list_publications,
     load_projects_config,
