@@ -1,0 +1,25 @@
+- id: "jsmith"
+  name: "John Smith"
+  aliases: ["J. Smith", "John A. Smith"]
+  role: "pi"
+  status: "current"
+  website: "https://jsmith.example.com"
+  start_year: 2015
+
+- id: "jdoe"
+  name: "Jane Doe"
+  aliases: ["J. Doe", "J. A. Doe", "Jane A. Doe"]
+  role: "phd_student"
+  status: "alumni"
+  start_year: 2018
+  end_year: 2023
+  degree: "PhD"
+  thesis_title: "Adaptive Robot Manipulation"
+  current_position: "Research Scientist at Google"
+
+- id: "hmuller"
+  name: "Hans Müller"
+  aliases: ["H. Müller", "H. Mueller"]
+  role: "postdoc"
+  status: "current"
+  start_year: 2022

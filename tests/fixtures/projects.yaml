@@ -1,0 +1,10 @@
+- id: "robotfeeding"
+  title: "Robot-Assisted Feeding"
+  description: "Autonomous feeding systems for people with mobility impairments"
+  website: "https://robotfeeding.io"
+  status: "active"
+
+- id: "planning"
+  title: "Motion Planning"
+  description: "Fast and safe motion planning algorithms"
+  status: "active"
