@@ -7,6 +7,7 @@ from labdata.models import Author, Publication, Person, Project, LabData
 from labdata.loaders import load_people, load_projects
 from labdata.resolver import (
     normalize_name,
+    is_abbreviated,
     build_alias_index,
     fuzzy_match,
     resolve_authors,
@@ -37,6 +38,21 @@ class TestNormalizeName:
         assert normalize_name("J. Smith<sup>*</sup>") == "j smith"
 
 
+class TestIsAbbreviated:
+    def test_single_initial_surname(self):
+        assert is_abbreviated("s choudhury") is True
+        assert is_abbreviated("h zhang") is True
+
+    def test_multi_initial(self):
+        assert is_abbreviated("s s srinivasa") is False
+
+    def test_full_name(self):
+        assert is_abbreviated("john smith") is False
+
+    def test_single_word(self):
+        assert is_abbreviated("srinivasa") is False
+
+
 class TestBuildAliasIndex:
     def test_indexes_name_and_aliases(self):
         people = [
@@ -57,11 +73,25 @@ class TestBuildAliasIndex:
         assert index["j smith"] == "jsmith"
         assert index["j doe"] == "jdoe"
 
+    def test_collision_detection(self):
+        """Ambiguous aliases shared by multiple people are excluded."""
+        people = [
+            Person(id="sanjiban", name="Sanjiban Choudhury", aliases=["S. Choudhury"]),
+            Person(id="shushman", name="Shushman Choudhury", aliases=["S. Choudhury"]),
+        ]
+        index = build_alias_index(people)
+        # "s choudhury" is ambiguous — should NOT be in the index
+        assert "s choudhury" not in index
+        # Canonical names are still indexed (they're unique)
+        assert index["sanjiban choudhury"] == "sanjiban"
+        assert index["shushman choudhury"] == "shushman"
+
 
 class TestFuzzyMatch:
-    def test_exact(self):
-        index = {"j smith": "jsmith", "j doe": "jdoe"}
-        assert fuzzy_match("J. Smith", index) == "jsmith"
+    def test_abbreviated_name_skipped(self):
+        """Single-initial names should NOT fuzzy match — too ambiguous."""
+        index = {"y zhang": "yzhang"}
+        assert fuzzy_match("H. Zhang", index) is None
 
     def test_close_match(self):
         index = {"john smith": "jsmith"}

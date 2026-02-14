@@ -11,6 +11,7 @@ MIT License - see LICENSE file for details.
 """
 
 import re
+import sys
 import unicodedata
 from difflib import SequenceMatcher
 from typing import Dict, List, Optional, Set, Tuple
@@ -20,6 +21,10 @@ from .models import Author, Publication, Person, Project, LabData
 
 # Default fuzzy match threshold (0.0 to 1.0)
 FUZZY_THRESHOLD = 0.85
+
+# Pattern for abbreviated names: single initial + surname (e.g., "S. Choudhury")
+# After normalization (no periods): "s choudhury", "h zhang", etc.
+_ABBREVIATED_NAME_RE = re.compile(r'^[a-z] [a-z]+$')
 
 
 def normalize_name(name: str) -> str:
@@ -44,21 +49,46 @@ def normalize_name(name: str) -> str:
     return name
 
 
+def is_abbreviated(name: str) -> bool:
+    """Check if a normalized name is a single-initial abbreviation.
+
+    Returns True for names like "s choudhury" or "h zhang" — these have
+    too little information for reliable fuzzy matching.
+    """
+    return bool(_ABBREVIATED_NAME_RE.match(name))
+
+
 def build_alias_index(people: List[Person]) -> Dict[str, str]:
     """Build a normalized name → person_id lookup from people data.
 
     Indexes both the canonical name and all explicit aliases.
+    Detects and skips ambiguous aliases (same normalized form for different people),
+    printing a warning to stderr.
     """
     index = {}
+    # Track which aliases are ambiguous (map to multiple people)
+    ambiguous: Dict[str, List[str]] = {}
+
     for person in people:
         # Index the canonical name
         normalized = normalize_name(person.name)
-        index[normalized] = person.id
+        if normalized in index and index[normalized] != person.id:
+            ambiguous.setdefault(normalized, [index.pop(normalized)]).append(person.id)
+        elif normalized not in ambiguous:
+            index[normalized] = person.id
 
         # Index all aliases
         for alias in person.aliases:
             normalized_alias = normalize_name(alias)
-            index[normalized_alias] = person.id
+            if normalized_alias in index and index[normalized_alias] != person.id:
+                ambiguous.setdefault(normalized_alias, [index.pop(normalized_alias)]).append(person.id)
+            elif normalized_alias in ambiguous:
+                ambiguous[normalized_alias].append(person.id)
+            else:
+                index[normalized_alias] = person.id
+
+    for name, ids in ambiguous.items():
+        print(f"Warning: ambiguous alias '{name}' matches multiple people: {ids}", file=sys.stderr)
 
     return index
 
@@ -66,9 +96,17 @@ def build_alias_index(people: List[Person]) -> Dict[str, str]:
 def fuzzy_match(name: str, index: Dict[str, str], threshold: float = FUZZY_THRESHOLD) -> Optional[str]:
     """Try fuzzy matching a name against the alias index.
 
+    Skips matching for single-initial abbreviated names (e.g., "S. Zhang")
+    since they lack enough information for reliable fuzzy matching.
+
     Returns the person_id of the best match above the threshold, or None.
     """
     normalized = normalize_name(name)
+
+    # Don't fuzzy-match abbreviated names — too ambiguous
+    if is_abbreviated(normalized):
+        return None
+
     best_ratio = 0.0
     best_id = None
 
