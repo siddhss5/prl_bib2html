@@ -9,17 +9,25 @@ Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
 MIT License - see LICENSE file for details.
 """
 
+from dataclasses import dataclass, field
 from typing import List, Optional
 
 from .config import LabDataConfig
-from collections import Counter
 from .models import LabData, Collaborator, Publication
 from .parsers.bibtex import parse_all_publications
 from .loaders import load_people, load_projects
 from .resolver import resolve_authors, resolve_projects, compute_backlinks
 
 
-def assemble(config: LabDataConfig) -> LabData:
+@dataclass
+class AssemblyResult:
+    """Result of assembling lab data, including diagnostics."""
+    data: LabData
+    unresolved_authors: List[str] = field(default_factory=list)
+    unknown_projects: List[str] = field(default_factory=list)
+
+
+def assemble(config: LabDataConfig, diagnostics: bool = False):
     """Main entry point: config → fully resolved LabData.
 
     1. Parse all BibTeX files into Publications
@@ -28,8 +36,10 @@ def assemble(config: LabDataConfig) -> LabData:
     4. Validate project IDs
     5. Compute back-links (people→pubs, projects→pubs, projects→people)
 
-    Returns:
-        LabData with all cross-references resolved
+    Args:
+        config: Lab data configuration
+        diagnostics: If True, return AssemblyResult with diagnostics.
+                     If False (default), return LabData directly.
     """
     # Parse publications
     bib_files = [{'name': bf.name, 'category': bf.category} for bf in config.bib_files]
@@ -44,8 +54,8 @@ def assemble(config: LabDataConfig) -> LabData:
     projects = load_projects(config.projects_file) if config.projects_file else []
 
     # Resolve
-    resolve_authors(publications, people)
-    resolve_projects(publications, projects)
+    unresolved_authors = resolve_authors(publications, people)
+    unknown_projects = resolve_projects(publications, projects)
 
     # Compute collaborators (external co-authors not in people.yaml)
     collab_counts: dict = {}
@@ -73,4 +83,10 @@ def assemble(config: LabDataConfig) -> LabData:
     # Back-link
     compute_backlinks(data)
 
+    if diagnostics:
+        return AssemblyResult(
+            data=data,
+            unresolved_authors=unresolved_authors,
+            unknown_projects=unknown_projects,
+        )
     return data

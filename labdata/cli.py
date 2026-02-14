@@ -8,7 +8,6 @@ MIT License - see LICENSE file for details.
 
 import argparse
 import sys
-from pathlib import Path
 
 from .config import LabDataConfig
 from .assembler import assemble
@@ -73,44 +72,9 @@ Examples:
         print(f"Error loading configuration: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Assemble data (manual pipeline to capture unresolved/unknown for reporting)
-    from .parsers.bibtex import parse_all_publications
-    from .loaders import load_people, load_projects
-    from .resolver import resolve_authors, resolve_projects, compute_backlinks
-    from .models import LabData, Collaborator
-
-    bib_files = [{'name': bf.name, 'category': bf.category} for bf in config.bib_files]
-    publications = parse_all_publications(
-        bib_dir=config.bib_dir,
-        bib_files=bib_files,
-        pdf_base_url=config.pdf_base_url,
-    )
-
-    people = load_people(config.people_file) if config.people_file else []
-    projects = load_projects(config.projects_file) if config.projects_file else []
-
-    unresolved_authors = resolve_authors(publications, people)
-    unknown_projects = resolve_projects(publications, projects)
-
-    collab_counts = {}
-    collab_years = {}
-    for pub in publications:
-        for author in pub.authors:
-            if author.person_id is None:
-                collab_counts[author.name] = collab_counts.get(author.name, 0) + 1
-                collab_years[author.name] = max(collab_years.get(author.name, 0), pub.year)
-    collaborators = sorted(
-        [Collaborator(name=name, publication_count=collab_counts[name],
-                      last_year=collab_years[name])
-         for name in collab_counts],
-        key=lambda c: (-c.last_year, -c.publication_count, c.name),
-    )
-
-    data = LabData(
-        publications=publications, people=people,
-        projects=projects, collaborators=collaborators,
-    )
-    compute_backlinks(data)
+    # Assemble data with diagnostics
+    result = assemble(config, diagnostics=True)
+    data = result.data
 
     # --validate mode
     if args.validate:
@@ -119,16 +83,16 @@ Examples:
         print(f"People: {len(data.people)}")
         print(f"Projects: {len(data.projects)}")
 
-        if unresolved_authors:
-            print(f"\nUnresolved authors ({len(unresolved_authors)}):")
-            for name in sorted(unresolved_authors):
+        if result.unresolved_authors:
+            print(f"\nUnresolved authors ({len(result.unresolved_authors)}):")
+            for name in sorted(result.unresolved_authors):
                 print(f"  - {name}")
 
-        if unknown_projects:
-            print(f"\nUnknown project IDs ({len(unknown_projects)}):")
-            for pid in sorted(unknown_projects):
+        if result.unknown_projects:
+            print(f"\nUnknown project IDs ({len(result.unknown_projects)}):")
+            for pid in sorted(result.unknown_projects):
                 print(f"  - {pid}")
-            errors += len(unknown_projects)
+            errors += len(result.unknown_projects)
 
         if errors:
             print(f"\nValidation found {errors} error(s).")
@@ -139,11 +103,11 @@ Examples:
 
     # --unresolved mode
     if args.unresolved:
-        if not unresolved_authors:
+        if not result.unresolved_authors:
             print("All authors resolved.")
         else:
-            print(f"Unresolved authors ({len(unresolved_authors)}):")
-            for name in sorted(unresolved_authors):
+            print(f"Unresolved authors ({len(result.unresolved_authors)}):")
+            for name in sorted(result.unresolved_authors):
                 print(f"  {name}")
         return
 
