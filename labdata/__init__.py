@@ -10,46 +10,25 @@ Author: Siddhartha Srinivasa <siddh@cs.washington.edu>
 MIT License - see LICENSE file for details.
 """
 
-from .publications import (
-    PublicationsConfig,
-    Publication,
-    list_publications,
-    load_projects_config,
-    list_publications_by_project
-)
-from .config_schema import (
-    LibraryConfig,
-    BibtexConfig,
-    ProjectsConfig,
-    OutputConfig,
-    BibtexFile
-)
-from .exporters import (
-    publication_to_dict,
-    publications_to_dict,
-    projects_to_dict,
-    export_to_yaml,
-    export_to_json
-)
+from .config import LabDataConfig, BibFile
+from .models import LabData, Publication, Author, Person, Project
+from .assembler import assemble
+from .exporters import export_to_yaml, export_to_json
 
 __all__ = [
-    # Legacy API (backward compatible)
-    "PublicationsConfig",
+    # Config
+    "LabDataConfig",
+    "BibFile",
+    # Data model
+    "LabData",
     "Publication",
-    "list_publications",
-    "load_projects_config",
-    "list_publications_by_project",
-    # New config-driven API
-    "LibraryConfig",
-    "BibtexConfig",
-    "ProjectsConfig",
-    "OutputConfig",
-    "BibtexFile",
-    # Export utilities
-    "publication_to_dict",
-    "publications_to_dict",
-    "projects_to_dict",
+    "Author",
+    "Person",
+    "Project",
+    # Pipeline
+    "assemble",
+    # Export
     "export_to_yaml",
-    "export_to_json"
+    "export_to_json",
 ]
 __version__ = "2.0.0-dev"
