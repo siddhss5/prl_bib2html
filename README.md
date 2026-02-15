@@ -1,33 +1,40 @@
 # labdata
 
-A data assembler for academic lab websites. Turns BibTeX files and simple YAML into structured, cross-referenced data that any site generator can consume.
+Most academic lab websites are a mess. Publications are added by hand, people pages go stale, and project links rot. Updating the site becomes one more chore that nobody wants to do, so it falls behind.
 
-## The Problem
+However, most academics already maintain excellent, up-to-date BibTeX files. labdata turns that BibTeX into a website. Add one custom tag (`project`) to your entries and labdata auto-generates publications, people, and project pages with full cross-referencing.
 
-Every academic lab maintains BibTeX files. Building a website from them means writing custom scripts that break whenever the data format changes, duplicating author metadata across files, and manually keeping publication pages in sync with project pages.
+## How It Works
 
-## What labdata Does
+1. **Fork this repo**
+2. **Drop in your `.bib` files** and edit `lab.yaml` with your lab's info
+3. **Enable GitHub Pages** (Settings → Pages → Source: GitHub Actions)
+4. **Push** — your site builds and deploys automatically
 
-labdata reads your existing BibTeX files, combines them with optional YAML files for people and projects, and outputs a single structured YAML or JSON file with all cross-references resolved:
+That's it. Every time you push updated BibTeX, the site regenerates. No manual HTML editing, no copy-paste errors, no drift between your papers and your website.
 
-- Publication authors are matched to lab members (via configurable aliases and fuzzy matching)
-- Publications are linked to research projects (via BibTeX `project` tags)
-- People and projects get back-linked lists of their publications
-- LaTeX formatting is converted to Markdown (not HTML), so any renderer can consume it
+**[See a live example →](https://goodrobot.ai/labdata/)**
 
-The output works with Jekyll, Hugo, Flask, Eleventy, React, or anything else that reads YAML/JSON.
+## What You Get
 
-## Installation
+- **Publications page** with search, collapsible abstracts, BibTeX copy buttons, and DOI/arXiv links
+- **People page** with current members, alumni, and 350+ collaborators — all auto-detected from paper co-authorship
+- **Projects page** with linked publications (tag papers in BibTeX with `project = {myproject}`)
+- **Landing page** with your lab name, description, and links
+
+The site uses the [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) Jekyll theme and deploys to GitHub Pages for free.
+
+## Setup
+
+### 1. Fork and clone
 
 ```bash
-git clone https://github.com/siddhss5/labdata.git
+git clone https://github.com/YOUR-USERNAME/labdata.git
 cd labdata
 pip install -e .
 ```
 
-## Quick Start
-
-**1. Create a configuration file** (`lab.yaml`):
+### 2. Configure `lab.yaml`
 
 ```yaml
 lab:
@@ -48,40 +55,64 @@ people_file: "data/people.yaml"       # optional
 projects_file: "data/projects.yaml"   # optional
 ```
 
-**2. Run it:**
+### 3. Add your data
+
+- Put your `.bib` files in `data/bib/`
+- Optionally create `data/people.yaml` for lab members (see below)
+- Optionally create `data/projects.yaml` for research projects (see below)
+
+### 4. Preview locally
 
 ```bash
-labdata --config lab.yaml --output lab.yml
+labdata --config lab.yaml --output site/_data/lab.yml
+cd site && bundle install && bundle exec jekyll serve
 ```
 
-**3. Check your data quality:**
+### 5. Deploy
 
-```bash
-# Summary and validation
-labdata --config lab.yaml --validate
+Enable GitHub Pages in your repo settings (Source: GitHub Actions) and push. The included workflow generates the site data and deploys automatically.
 
-# List author names that couldn't be matched to lab members
-labdata --config lab.yaml --unresolved
-```
+## Data Files
 
-## Input Files
+### BibTeX (required)
 
-### BibTeX Files
+Standard `.bib` files. labdata extracts the following standard BibTeX fields:
 
-Standard `.bib` files. Tag publications with projects using a `project` field:
+| Field | Used for |
+|-------|----------|
+| `title` | Publication title (LaTeX converted to Markdown) |
+| `author` | Author list (auto-matched to lab members) |
+| `year` | Sorting and grouping |
+| `booktitle` / `journal` | Venue display |
+| `doi` | DOI link button |
+| `eprint` + `archivePrefix` | arXiv link button |
+| `abstract` | Collapsible abstract panel |
+| `note` | Highlighted note (e.g. "Best Paper Award") |
+| `url` | Video link (if YouTube/Vimeo) or generic link |
+
+All fields are also preserved in the copyable BibTeX button.
+
+### The `project` tag
+
+labdata introduces one custom BibTeX field: `project`. Add it to any entry to link that paper to a research project:
 
 ```bibtex
 @inproceedings{nanavati2025lessons,
-  title   = {Lessons Learned from Robot-assisted Feeding},
-  author  = {Nanavati, Amal and Srinivasa, Siddhartha},
-  year    = {2025},
-  project = {robotfeeding}
+  title    = {Lessons Learned from Robot-assisted Feeding},
+  author   = {Nanavati, Amal and Srinivasa, Siddhartha},
+  year     = {2025},
+  doi      = {10.1234/hri.2025.001},
+  abstract = {We present lessons from deploying...},
+  note     = {Best Paper Award},
+  project  = {robotfeeding}
 }
 ```
 
-### People (`data/people.yaml`)
+This single tag is all labdata needs to auto-generate project pages with linked publications and contributing authors. You can assign multiple projects with commas: `project = {robotfeeding, assistive}`.
 
-A list of lab members and alumni. The `aliases` field is how labdata matches BibTeX author names to people:
+### People (optional, `data/people.yaml`)
+
+A list of lab members and alumni. The `aliases` field tells labdata how to match BibTeX author names to people:
 
 ```yaml
 - id: "nanavati"
@@ -102,7 +133,7 @@ A list of lab members and alumni. The `aliases` field is how labdata matches Bib
   current_position: "Research Scientist at Google"
 ```
 
-### Projects (`data/projects.yaml`)
+### Projects (optional, `data/projects.yaml`)
 
 ```yaml
 - id: "robotfeeding"
@@ -112,43 +143,28 @@ A list of lab members and alumni. The `aliases` field is how labdata matches Bib
   status: "active"
 ```
 
-## Output
+## Validation
 
-A single YAML (or JSON) file with three sections:
+```bash
+# Check data quality
+labdata --config lab.yaml --validate
 
-```yaml
-publications:
-  - bib_id: "nanavati2025lessons"
-    title: "Lessons Learned from Robot-assisted Feeding"
-    authors:
-      - name: "A. Nanavati"
-        person_id: "nanavati"       # matched to people.yaml
-      - name: "S. Srinivasa"
-        person_id: null             # external collaborator
-    year: 2025
-    venue: "*HRI*, 2025"            # Markdown formatting
-    category: "Conference Papers"
-    pdf_url: "https://your-lab.edu/pdfs/nanavati2025lessons.pdf"
-    doi_url: "https://doi.org/10.1234/..."
-    project_ids: ["robotfeeding"]
-
-people:
-  - id: "nanavati"
-    name: "Amal Nanavati"
-    role: "phd_student"
-    status: "current"
-    publication_count: 12
-    publication_ids: ["nanavati2025lessons", ...]   # auto-computed
-
-projects:
-  - id: "robotfeeding"
-    title: "Robot-Assisted Feeding"
-    status: "active"
-    publication_ids: ["nanavati2025lessons", ...]   # auto-computed
-    people_ids: ["nanavati", ...]                   # auto-computed
+# List author names that couldn't be matched to lab members
+labdata --config lab.yaml --unresolved
 ```
 
+## How Author Matching Works
+
+labdata matches BibTeX author names to lab members in two passes:
+
+1. **Exact alias match** — checks against the `aliases` list in `people.yaml` (after normalizing case, accents, and punctuation)
+2. **Fuzzy fallback** — uses string similarity (threshold: 0.85) to catch minor spelling variations
+
+Anyone not matched is listed as a collaborator. Use `labdata --unresolved` to review unmatched names and add aliases as needed.
+
 ## Python API
+
+If you want to use labdata programmatically instead of (or in addition to) the Jekyll site:
 
 ```python
 from labdata import LabDataConfig, assemble, export_to_yaml
@@ -163,44 +179,14 @@ export_to_yaml(data, "lab.yml")
 for pub in data.publications:
     authors = ", ".join(a.name for a in pub.authors)
     print(f"{pub.title} ({authors})")
-
-for person in data.people:
-    print(f"{person.name}: {person.publication_count} publications")
 ```
 
-## Site
-
-The [`site/`](site/) directory contains a complete Jekyll site using the [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) theme. It renders publications, people, and projects pages from labdata output.
-
-**To use it with your own data:**
-
-1. Fork this repo
-2. Edit `lab.yaml` to point to your BibTeX files
-3. Enable GitHub Pages (Settings → Pages → Source: GitHub Actions)
-4. Push — the site builds and deploys automatically
-
-**To preview locally:**
-
-```bash
-labdata --config lab.yaml --output site/_data/lab.yml
-cd site && bundle install && bundle exec jekyll serve
-```
-
-The GitHub Actions workflow in `.github/workflows/deploy.yml` runs `labdata` to generate `site/_data/lab.yml`, then builds and deploys the Jekyll site to GitHub Pages.
-
-## How Author Matching Works
-
-labdata uses a two-pass strategy to match BibTeX author names to lab members:
-
-1. **Exact alias match**: Checks each author name against the `aliases` list in `people.yaml` (after normalizing case, accents, and punctuation)
-2. **Fuzzy fallback**: Uses string similarity (threshold: 0.85) to catch minor spelling variations
-
-Authors who don't match anyone in `people.yaml` are left with `person_id: null`. Use `labdata --unresolved` to review them.
+The output is a single YAML/JSON file that works with Jekyll, Hugo, Flask, Eleventy, React, or anything else.
 
 ## Dependencies
 
-- **bibtexparser** - BibTeX parsing
-- **pyyaml** - YAML I/O
+- **bibtexparser** — BibTeX parsing
+- **pyyaml** — YAML I/O
 
 No network calls. All processing is local and offline.
 
